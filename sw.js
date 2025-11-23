@@ -1,5 +1,5 @@
 // Simple app-shell cache for offline usage
-const CACHE = "ksr-cache-v3.3";
+const CACHE = "ksr-cache-v3.4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -41,5 +41,5 @@ self.addEventListener("fetch", (event) => {
       });
     })
   );
-
 });
+
