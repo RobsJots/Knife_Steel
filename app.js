@@ -1,10 +1,18 @@
 // State
 const state = { steels: [], index: [] };
 
-// Normalize strings
+// Normalize strings for fuzzy search
 const norm = (s) => s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
 
-// Build index
+// Parse HRC optimal to a numeric value (handles "62+", "61–62 / 61", etc.)
+function parseHrcOptimal(s) {
+  if (!s) return Number.NEGATIVE_INFINITY;
+  // Extract first number in the string
+  const m = String(s).match(/(\d+(\.\d+)?)/);
+  return m ? parseFloat(m[1]) : Number.NEGATIVE_INFINITY;
+}
+
+// Build index for search
 function buildIndex(steels) {
   state.index = steels.map((s) => ({
     key: norm(`${s.name} ${s.aliases?.join(" ") || ""}`),
@@ -12,7 +20,7 @@ function buildIndex(steels) {
   }));
 }
 
-// Score
+// Simple scoring for fuzzy search
 function score(key, q) {
   if (key.includes(q)) return 3;
   const qTokens = q.split(/\s+/).filter(Boolean);
@@ -23,7 +31,6 @@ function score(key, q) {
   return 0;
 }
 
-// Fuzzy find
 function fuzzyFind(query, limit = 50) {
   const q = norm(query);
   if (!q) return [];
@@ -35,7 +42,7 @@ function fuzzyFind(query, limit = 50) {
     .map(({ ref }) => ref);
 }
 
-// Suggestions
+// Suggestions dropdown
 function renderSuggestions(list) {
   const ul = document.getElementById("suggestions");
   ul.innerHTML = "";
@@ -58,38 +65,6 @@ function renderSuggestions(list) {
 function scrollToCards() {
   const el = document.getElementById("cards");
   if (el && typeof el.scrollIntoView === "function") el.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-// Render grouped panels
-function renderGrouped(steels) {
-  const root = document.getElementById("cards");
-  root.innerHTML = "";
-
-  const finishes = ["Polished", "Toothy", "Balanced"];
-  finishes.forEach((finish) => {
-    const section = document.createElement("section");
-    section.className = `panel panel-${finish.toLowerCase()}`;
-    section.innerHTML = `<h2 class="panel-header">${finish} Finish</h2>`;
-    const grid = document.createElement("div");
-    grid.className = "card-grid";
-
-    steels.filter((s) => s.finish === finish).forEach((s) => {
-      grid.appendChild(cardNode(s));
-    });
-
-    section.appendChild(grid);
-    root.appendChild(section);
-  });
-}
-
-// Render cards (search results)
-function renderCards(steels) {
-  const root = document.getElementById("cards");
-  root.innerHTML = "";
-  const grid = document.createElement("div");
-  grid.className = "card-grid";
-  steels.forEach((s) => grid.appendChild(cardNode(s)));
-  root.appendChild(grid);
 }
 
 // Card node
@@ -119,12 +94,52 @@ function cardNode(s) {
   return div;
 }
 
+// Render grouped panels with ascending HRC
+function renderGrouped(steels) {
+  const root = document.getElementById("cards");
+  root.innerHTML = "";
+
+  const finishes = [
+    { key: "Polished", cls: "panel-polished", title: "Polished Finish" },
+    { key: "Toothy",   cls: "panel-toothy",   title: "Toothy Finish" },
+    { key: "Balanced", cls: "panel-balanced", title: "Balanced Finish" }
+  ];
+
+  finishes.forEach(({ key, cls, title }) => {
+    const section = document.createElement("section");
+    section.className = `panel ${cls}`;
+    section.innerHTML = `<h2 class="panel-header">${title}</h2>`;
+
+    const grid = document.createElement("div");
+    grid.className = "card-grid";
+
+    steels
+      .filter((s) => s.finish === key)
+      .sort((a, b) => parseHrcOptimal(a.hrcOptimal) - parseHrcOptimal(b.hrcOptimal))
+      .forEach((s) => grid.appendChild(cardNode(s)));
+
+    section.appendChild(grid);
+    root.appendChild(section);
+  });
+}
+
+// Render search results in a consistent grid (no full-width card)
+function renderCards(steels) {
+  const root = document.getElementById("cards");
+  root.innerHTML = "";
+  const grid = document.createElement("div");
+  grid.className = "card-grid";
+  steels.forEach((s) => grid.appendChild(cardNode(s)));
+  root.appendChild(grid);
+}
+
 // Init
 async function init() {
   const resp = await fetch("steels.json");
   state.steels = await resp.json();
   buildIndex(state.steels);
 
+  // Default: full grouped view (3 panels side by side, sorted ascending HRC)
   renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
@@ -151,7 +166,8 @@ async function init() {
 
   document.addEventListener("click", (e) => {
     const s = document.getElementById("suggestions");
-    if (!document.querySelector(".search-wrap").contains(e.target)) s.classList.remove("show");
+    const wrap = document.querySelector(".search-wrap");
+    if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
   });
 }
 
