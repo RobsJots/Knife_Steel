@@ -1,5 +1,5 @@
 :root {
-  /* Panel colors as requested */
+  /* Panel colors */
   --polished-bg: #E8F4FF;   /* light blue */
   --toothy-bg:   #F2F2F2;   /* light gray */
   --balanced-bg: #E8F9F5;   /* light green */
@@ -162,8 +162,28 @@ a { color: inherit; text-decoration: none; }
 .bar-orange { background: var(--dps-orange); border-radius: 2px; }
 
 /* Footer */
-.app-footer { text-align: center; padding: 16px; color: var(--muted); font-size: 0.95rem; }
-.app-footer .note { margin-top: 4px; }
+.app-footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 0.95rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+.app-footer .version {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.app-footer .legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+.app-footer .legend span {
+  white-space: nowrap;
+}
 
 /* Search results container: it uses the same 2-col grid to avoid full-width cards */
 #cards > .card-grid {
@@ -187,4 +207,3 @@ a { color: inherit; text-decoration: none; }
   .card { font-size: 1rem; }
   .card .hrc { font-size: 0.9rem; }
 }
-
