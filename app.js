@@ -1,10 +1,7 @@
 // State
-const state = {
-  steels: [],
-  index: []
-};
+const state = { steels: [], index: [] };
 
-// Normalize strings for fuzzy search
+// Normalize strings
 const norm = (s) => s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
 
 // Build index
@@ -15,7 +12,7 @@ function buildIndex(steels) {
   }));
 }
 
-// Scoring
+// Score
 function score(key, q) {
   if (key.includes(q)) return 3;
   const qTokens = q.split(/\s+/).filter(Boolean);
@@ -38,7 +35,7 @@ function fuzzyFind(query, limit = 50) {
     .map(({ ref }) => ref);
 }
 
-// Suggestions dropdown
+// Suggestions
 function renderSuggestions(list) {
   const ul = document.getElementById("suggestions");
   ul.innerHTML = "";
@@ -71,7 +68,7 @@ function renderGrouped(steels) {
   const finishes = ["Polished", "Toothy", "Balanced"];
   finishes.forEach((finish) => {
     const section = document.createElement("section");
-    section.className = "panel";
+    section.className = `panel panel-${finish.toLowerCase()}`;
     section.innerHTML = `<h2 class="panel-header">${finish} Finish</h2>`;
     const grid = document.createElement("div");
     grid.className = "card-grid";
@@ -85,11 +82,14 @@ function renderGrouped(steels) {
   });
 }
 
-// Render flat list (for search results)
+// Render cards (search results)
 function renderCards(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
-  steels.forEach((s) => root.appendChild(cardNode(s)));
+  const grid = document.createElement("div");
+  grid.className = "card-grid";
+  steels.forEach((s) => grid.appendChild(cardNode(s)));
+  root.appendChild(grid);
 }
 
 // Card node
@@ -125,7 +125,6 @@ async function init() {
   state.steels = await resp.json();
   buildIndex(state.steels);
 
-  // Show all steels grouped by finish
   renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
