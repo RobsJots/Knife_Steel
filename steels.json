@@ -120,20 +120,20 @@
     ]
   },
   {
-    "name": "CPM-3V",
-    "finish": "Toothy",
-    "aliases": ["3V"],
-    "hrcRange": "58–60",
-    "hrcOptimal": "59",
-    "process": "PM (Crucible)",
-    "traits": ["🛡️ Exceptional toughness", "💧 Non-stainless", "🪨 Easy to sharpen", "⚙️ Moderate carbides"],
-    "mfg": "Bark River, TRC, Custom",
-    "grit": "600–1000 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "20 DPS – durable edge retention with sustained bite" },
-      { "bar": "bar-orange", "text": "22 DPS – maximal resistance to rolling/chipping" }
-    ]
-  },
+  "name": "CPM-3V",
+  "finish": "Toothy",
+  "aliases": ["3V"],
+  "hrcRange": "58–60",
+  "hrcOptimal": "59",
+  "process": "PM (Crucible)",
+  "traits": ["🛡️ Exceptional toughness", "💧 Non-stainless", "🪨 Easy to sharpen", "⚙️ Moderate carbides"],
+  "mfg": "Work Sharp, Bark River, TRC, Custom",
+  "grit": "600–1000 grit",
+  "dps": [
+    { "bar": "bar-green", "text": "20 DPS – durable edge retention with sustained bite" },
+    { "bar": "bar-orange", "text": "22 DPS – maximal resistance to rolling/chipping" }
+  ]
+},
   {
     "name": "D2",
     "finish": "Toothy",
@@ -390,4 +390,5 @@
     ]
   }
 ]
+
 
