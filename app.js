@@ -27,7 +27,7 @@ function score(key, q) {
 }
 
 // Fuzzy find
-function fuzzyFind(query, limit = 8) {
+function fuzzyFind(query, limit = 50) {
   const q = norm(query);
   if (!q) return [];
   return state.index
@@ -63,7 +63,29 @@ function scrollToCards() {
   if (el && typeof el.scrollIntoView === "function") el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-// Render cards
+// Render grouped by finish
+function renderGrouped(steels) {
+  const root = document.getElementById("cards");
+  root.innerHTML = "";
+
+  const finishes = ["Polished", "Toothy", "Balanced"];
+  finishes.forEach((finish) => {
+    const section = document.createElement("section");
+    section.className = "panel";
+    section.innerHTML = `<h2 class="panel-header">${finish} Finish</h2>`;
+    const grid = document.createElement("div");
+    grid.className = "card-grid";
+
+    steels.filter((s) => s.finish === finish).forEach((s) => {
+      grid.appendChild(cardNode(s));
+    });
+
+    section.appendChild(grid);
+    root.appendChild(section);
+  });
+}
+
+// Render flat list of cards (used for search results)
 function renderCards(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
@@ -103,14 +125,14 @@ async function init() {
   state.steels = await resp.json();
   buildIndex(state.steels);
 
-  // Initial render: show first 9 as sample
-  renderCards(state.steels.slice(0, 9));
+  // Initial render: show all steels grouped by finish
+  renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
 
   input.addEventListener("input", (e) => {
     const q = e.target.value;
-    if (!q) { renderSuggestions([]); renderCards(state.steels.slice(0, 9)); return; }
+    if (!q) { renderSuggestions([]); renderGrouped(state.steels); return; }
     renderSuggestions(fuzzyFind(q));
   });
 
@@ -119,7 +141,11 @@ async function init() {
       const q = e.target.value;
       const results = fuzzyFind(q, 50);
       renderSuggestions([]);
-      renderCards(results.length ? results : []);
+      if (results.length) {
+        renderCards(results);
+      } else {
+        renderGrouped(state.steels);
+      }
       scrollToCards();
     }
   });
