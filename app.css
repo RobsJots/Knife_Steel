@@ -1,4 +1,3 @@
-/* Base design tokens */
 :root {
   --grit-pill: #4B4CFF;
   --dps-green: #2E8B57;
@@ -21,7 +20,6 @@ html, body {
   font-family: Inter, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* App chrome */
 .ksr-app {
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -48,7 +46,6 @@ html, body {
   font-size: 1rem;
 }
 
-/* Suggestions dropdown */
 .suggestions {
   position: absolute;
   left: 0; right: 0; top: calc(100% + 6px);
@@ -64,14 +61,23 @@ html, body {
 .suggestions li { padding: 8px 10px; cursor: pointer; border-radius: 6px; }
 .suggestions li:hover { background: #f6f6f6; }
 
-/* Cards layout */
-.cards {
+/* Panel grouping */
+.panel {
+  margin-bottom: 32px;
+}
+.panel-header {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #ddd;
+}
+.card-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
-  padding: 16px;
 }
 
+/* Cards */
 .card {
   background: var(--card-bg);
   border-radius: var(--radius);
@@ -90,42 +96,4 @@ html, body {
   padding-bottom: 6px;
 }
 .card .name { font-weight: 700; font-size: 1.25rem; }
-.card .hrc { font-variant: small-caps; font-size: 0.85rem; color: #333; font-weight: 600; }
-
-.card .process, .card .mfg { font-size: 0.9rem; color: #333; }
-.card .traits { margin: 0; padding-left: 18px; }
-.card .traits li { margin: 2px 0; }
-
-/* Grit pill: locked white text even if auto-linked */
-.grit-pill, span.grit-pill, .grit-pill a {
-  background: var(--grit-pill) !important;
-  color: white !important;
-  padding: 4px 8px !important;
-  border-radius: 999px !important;
-  font-weight: 600 !important;
-  font-size: 0.9rem !important;
-  display: inline-block !important;
-  text-decoration: none !important;
-}
-.grit-pill a { pointer-events: none !important; }
-a { color: inherit; text-decoration: none; }
-
-/* DPS bars */
-.dps { display: grid; gap: 4px; }
-.dps-row { display: grid; grid-template-columns: 6px 1fr; gap: 8px; align-items: start; }
-.bar-green { background: var(--dps-green); border-radius: 2px; }
-.bar-orange { background: var(--dps-orange); border-radius: 2px; }
-
-/* Footer */
-.app-footer { text-align: center; padding: 16px; color: var(--muted); font-size: 0.95rem; }
-.app-footer .note { margin-top: 4px; }
-
-/* Mobile */
-@media (max-width: 768px) {
-  .cards { grid-template-columns: 1fr; }
-  .app-header h1 { font-size: 1.25rem; }
-  .card { font-size: 1rem; }
-}
-@media (min-width: 769px) and (max-width: 1200px) {
-  .cards { grid-template-columns: repeat(2, minmax(280px, 1fr)); }
-}
+.card .hrc { font-variant: small-caps; font-size: 0.
