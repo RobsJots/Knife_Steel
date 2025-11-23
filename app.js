@@ -4,10 +4,10 @@ const state = {
   index: []
 };
 
-// Normalization
+// Normalize strings for fuzzy search
 const norm = (s) => s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
 
-// Build index for quick lookup
+// Build index
 function buildIndex(steels) {
   state.index = steels.map((s) => ({
     key: norm(`${s.name} ${s.aliases?.join(" ") || ""}`),
@@ -15,7 +15,7 @@ function buildIndex(steels) {
   }));
 }
 
-// Simple scoring: substring > token overlap > prefix
+// Scoring
 function score(key, q) {
   if (key.includes(q)) return 3;
   const qTokens = q.split(/\s+/).filter(Boolean);
@@ -38,7 +38,7 @@ function fuzzyFind(query, limit = 50) {
     .map(({ ref }) => ref);
 }
 
-// Render suggestions
+// Suggestions dropdown
 function renderSuggestions(list) {
   const ul = document.getElementById("suggestions");
   ul.innerHTML = "";
@@ -63,7 +63,7 @@ function scrollToCards() {
   if (el && typeof el.scrollIntoView === "function") el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-// Render grouped by finish
+// Render grouped panels
 function renderGrouped(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
@@ -85,7 +85,7 @@ function renderGrouped(steels) {
   });
 }
 
-// Render flat list of cards (used for search results)
+// Render flat list (for search results)
 function renderCards(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
@@ -125,7 +125,7 @@ async function init() {
   state.steels = await resp.json();
   buildIndex(state.steels);
 
-  // Initial render: show all steels grouped by finish
+  // Show all steels grouped by finish
   renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
