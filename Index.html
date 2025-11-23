@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Knife Steel & Sharpening Reference</title>
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- PWA manifest and service worker -->
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Fonts + styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="ksr-app">
+    <header class="app-header">
+      <h1>Knife Steel &amp; Sharpening Reference</h1>
+      <div class="search-wrap">
+        <input id="steelSearch" type="search" placeholder="Type a steel (e.g., MagnaCut, AEB‑L, M390)" autocomplete="off" aria-label="Search steel">
+        <ul id="suggestions" class="suggestions" role="listbox" aria-label="Steel suggestions"></ul>
+      </div>
+    </header>
+
+    <main id="cards" class="cards" aria-live="polite"></main>
+
+    <footer class="app-footer">
+      <div>© 2025 Knife Steel &amp; Sharpening Reference v3.2</div>
+      <div class="note">Installable, standalone, offline-capable. Type to search for any steel.</div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
+</body>
+</html>

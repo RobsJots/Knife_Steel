@@ -1,0 +1,11 @@
+{
+  "name": "Knife Steel & Sharpening Reference",
+  "short_name": "Knife Steel",
+  "description": "Instant lookup for knife steel cards and sharpening guidance.",
+  "lang": "en",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1a1a1a"
+}
