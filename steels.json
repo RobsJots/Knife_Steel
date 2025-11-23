@@ -10,8 +10,8 @@
     "mfg": "Buck, Spyderco, Benchmade",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "17 DPS – good retention, moderate chipping resistance" },
-      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance, slight retention trade-off" }
+      { "bar": "bar-green", "text": "17 DPS – good edge retention, moderate chipping resistance" },
+      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance, slight edge retention trade-off" }
     ]
   },
   {
@@ -25,7 +25,7 @@
     "mfg": "Spyderco, Benchmade, Kershaw",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – strong retention at polish" },
+      { "bar": "bar-green", "text": "18 DPS – strong edge retention at polish" },
       { "bar": "bar-orange", "text": "20 DPS – better chipping resistance" }
     ]
   },
@@ -41,7 +41,7 @@
     "grit": "3000+ grit",
     "dps": [
       { "bar": "bar-green", "text": "15 DPS – superb clean push cuts" },
-      { "bar": "bar-orange", "text": "17 DPS – higher chipping resistance, slight retention trade-off" }
+      { "bar": "bar-orange", "text": "17 DPS – higher chipping resistance, slight edge retention trade-off" }
     ]
   },
   {
@@ -55,7 +55,7 @@
     "mfg": "Bark River, TRM",
     "grit": "2000–3000+ grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – excellent polished utility" },
+      { "bar": "bar-green", "text": "18 DPS – excellent polished edge retention" },
       { "bar": "bar-orange", "text": "20 DPS – added robustness for mixed media" }
     ]
   },
@@ -70,7 +70,7 @@
     "mfg": "Benchmade, ZT, WE",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – strong retention at refined polish" },
+      { "bar": "bar-green", "text": "18 DPS – strong edge retention at refined polish" },
       { "bar": "bar-orange", "text": "20 DPS – added stability for abrasive media" }
     ]
   },
@@ -85,7 +85,7 @@
     "mfg": "LionSteel, Bark River, ZT, Rike",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – strong retention at polish" },
+      { "bar": "bar-green", "text": "18 DPS – strong edge retention at polish" },
       { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
     ]
   },
@@ -100,7 +100,7 @@
     "mfg": "Spyderco, Benchmade, TRM, Bark River, WE, Rike, Vosteed",
     "grit": "1000–3000+ grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – excellent retention without micro-chipping" },
+      { "bar": "bar-green", "text": "18 DPS – excellent edge retention without micro-chipping" },
       { "bar": "bar-orange", "text": "20 DPS – best chipping resistance in EDC" }
     ]
   },
@@ -115,7 +115,7 @@
     "mfg": "Real Steel, Miguron, Vosteed",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – optimal retention at polish" },
+      { "bar": "bar-green", "text": "18 DPS – optimal edge retention at polish" },
       { "bar": "bar-orange", "text": "20 DPS – improved chip resistance" }
     ]
   },
@@ -175,7 +175,7 @@
     "mfg": "Historical/limited",
     "grit": "600–800 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – aggressive bite, strong retention" },
+      { "bar": "bar-green", "text": "18 DPS – aggressive bite, strong edge retention" },
       { "bar": "bar-orange", "text": "20 DPS – improved stability at high hardness" }
     ]
   },
@@ -190,7 +190,7 @@
     "mfg": "Böhler customs, Spyderco (limited)",
     "grit": "600–800 grit",
     "dps": [
-      { "bar": "bar-green", "text": "20 DPS – max retention, lower chip resistance" },
+      { "bar": "bar-green", "text": "20 DPS – max edge retention, lower chip resistance" },
       { "bar": "bar-orange", "text": "22 DPS – improved stability" }
     ]
   },
@@ -205,7 +205,7 @@
     "mfg": "Spyderco, Benchmade, Custom",
     "grit": "1000–2000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – excellent retention with workable polish" },
+      { "bar": "bar-green", "text": "18 DPS – excellent edge retention with workable polish" },
       { "bar": "bar-orange", "text": "20 DPS – increased stability on hard media" }
     ]
   },
@@ -220,7 +220,7 @@
     "mfg": "Spyderco, Böhler customs",
     "grit": "600–800 grit",
     "dps": [
-      { "bar": "bar-green", "text": "20 DPS – very high retention, moderate chip resistance" },
+      { "bar": "bar-green", "text": "20 DPS – very high edge retention, moderate chip resistance" },
       { "bar": "bar-orange", "text": "22 DPS – best chip resistance" }
     ]
   },
@@ -235,7 +235,7 @@
     "mfg": "Spyderco, Crucible customs",
     "grit": "600–1000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "20 DPS – strong retention, moderate chipping resistance" },
+      { "bar": "bar-green", "text": "20 DPS – strong edge retention, moderate chipping resistance" },
       { "bar": "bar-orange", "text": "22 DPS – best chipping resistance" }
     ]
   },
@@ -250,8 +250,8 @@
     "mfg": "Spyderco (special runs), Crucible customs",
     "grit": "400–600 grit",
     "dps": [
-      { "bar": "bar-green", "text": "22 DPS – extreme retention, low chip resistance" },
-      { "bar": "bar-orange", "text": "24 DPS – best chip resistance, slight retention trade-off" }
+      { "bar": "bar-green", "text": "22 DPS – extreme edge retention, low chip resistance" },
+      { "bar": "bar-orange", "text": "24 DPS – best chip resistance, slight edge retention trade-off" }
     ]
   },
   {
@@ -265,7 +265,7 @@
     "mfg": "Buck, Case, CRKT",
     "grit": "800–1000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "16 DPS – decent retention, moderate chipping resistance" },
+      { "bar": "bar-green", "text": "16 DPS – decent edge retention, moderate chipping resistance" },
       { "bar": "bar-orange", "text": "18 DPS – best chipping resistance" }
     ]
   },
@@ -280,7 +280,7 @@
     "mfg": "Chris Reeve, Spyderco, Benchmade",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – excellent retention, moderate chipping resistance" },
+      { "bar": "bar-green", "text": "18 DPS – excellent edge retention, moderate chipping resistance" },
       { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
     ]
   },
@@ -295,7 +295,7 @@
     "mfg": "Ganzo, Sanrenmu, Civivi, Vosteed",
     "grit": "800–1000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – utility bite with dependable retention" },
+      { "bar": "bar-green", "text": "18 DPS – utility bite with dependable edge retention" },
       { "bar": "bar-orange", "text": "20 DPS – improved stability for rough tasks" }
     ]
   },
@@ -310,7 +310,7 @@
     "mfg": "Morakniv, Kershaw, Ruike, Vosteed",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "17 DPS – good retention, moderate chipping resistance" },
+      { "bar": "bar-green", "text": "17 DPS – good edge retention, moderate chipping resistance" },
       { "bar": "bar-orange", "text": "19 DPS – best chipping resistance" }
     ]
   },
@@ -325,7 +325,7 @@
     "mfg": "Spyderco, Benchmade, Custom",
     "grit": "1000–3000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "19 DPS – very high retention" },
+      { "bar": "bar-green", "text": "19 DPS – very high edge retention" },
       { "bar": "bar-orange", "text": "21 DPS – best chipping resistance" }
     ]
   },
@@ -340,7 +340,7 @@
     "mfg": "CJRB, Artisan Cutlery",
     "grit": "1000–2000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – balanced EDC bite and retention" },
+      { "bar": "bar-green", "text": "18 DPS – balanced EDC bite and edge retention" },
       { "bar": "bar-orange", "text": "20 DPS – improved stability for hard materials" }
     ]
   },
@@ -370,7 +370,7 @@
     "mfg": "Civivi, Sencut, Kansept, Vosteed",
     "grit": "800–1000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – decent retention, moderate chip resistance" },
+      { "bar": "bar-green", "text": "18 DPS – decent edge retention, moderate chip resistance" },
       { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
     ]
   },
@@ -385,7 +385,7 @@
     "mfg": "Benchmade, Böker, ZT, WE, Kansept, Rike, Vosteed",
     "grit": "1000–2000 grit",
     "dps": [
-      { "bar": "bar-green", "text": "20 DPS – very high retention, moderate chip resistance" },
+      { "bar": "bar-green", "text": "20 DPS – very high edge retention, moderate chip resistance" },
       { "bar": "bar-orange", "text": "22 DPS – added stability under hard use" }
     ]
   }
