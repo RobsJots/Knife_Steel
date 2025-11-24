@@ -1,5 +1,5 @@
-// Knife Steel Reference v3.4.1 — app-shell cache for offline usage
-const CACHE = "ksr-cache-v3.4.1";
+// Knife Steel Reference v3.5 — app-shell cache for offline usage
+const CACHE = "ksr-cache-v3.5";
 const ASSETS = [
   "./",
   "./index.html",
@@ -28,17 +28,15 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
-      return fetch(request)
-        .then((resp) => {
-          if (request.method === "GET" && resp.status === 200 && resp.type === "basic") {
-            const copy = resp.clone();
-            caches.open(CACHE).then((c) => c.put(request, copy));
-          }
-          return resp;
-        })
-        .catch(() => {
-          if (request.mode === "navigate") return caches.match("./index.html");
-        });
+      return fetch(request).then((resp) => {
+        if (request.method === "GET" && resp.status === 200 && resp.type === "basic") {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(request, copy));
+        }
+        return resp;
+      }).catch(() => {
+        if (request.mode === "navigate") return caches.match("./index.html");
+      });
     })
   );
 });
