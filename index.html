@@ -2,47 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
   <title>Knife Steel Reference v3.4.1</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="app.css">
   <meta name="theme-color" content="#ffffff">
 </head>
 <body>
-  <div class="ksr-app">
-    <header class="app-header">
-      <h1>Knife Steel Reference v3.4.1</h1>
-      <div class="search-wrap">
-        <input id="steelSearch" type="text" placeholder="Search steels, aliases, traits...">
-        <ul id="suggestions" class="suggestions"></ul>
-      </div>
-    </header>
+  <header class="app-header">
+    <h1>Knife Steel Reference v3.4.1</h1>
+    <div class="search-wrap">
+      <input id="steelSearch" type="text" placeholder="Search steels, aliases, traits...">
+      <ul id="suggestions" class="suggestions" role="listbox" aria-label="Steel suggestions"></ul>
+    </div>
+  </header>
 
-    <main class="panels">
-      <section class="panel panel-polished">
-        <h2 class="panel-header">Polished finish</h2>
-        <div id="cards-polished" class="card-grid"></div>
-      </section>
+  <main id="cards" class="cards-root" aria-live="polite"></main>
 
-      <section class="panel panel-toothy">
-        <h2 class="panel-header">Toothy finish</h2>
-        <div id="cards-toothy" class="card-grid"></div>
-      </section>
-
-      <section class="panel panel-balanced">
-        <h2 class="panel-header">Balanced finish</h2>
-        <div id="cards-balanced" class="card-grid"></div>
-      </section>
-    </main>
-
-    <footer class="app-footer">
-      <div class="version">Version: v3.4.1</div>
-      <div class="legend">
-        <span><span class="legend-bar bar-green"></span> Edge retention</span>
-        <span><span class="legend-bar bar-orange"></span> Chipping resistance</span>
-      </div>
-    </footer>
-  </div>
+  <footer class="app-footer">
+    <div class="version">Version: v3.4.1</div>
+    <div class="legend">
+      <span><span class="legend-bar bar-green"></span> Edge retention</span>
+      <span><span class="legend-bar bar-orange"></span> Chipping resistance</span>
+    </div>
+  </footer>
 
   <script src="app.js"></script>
   <script>
@@ -54,4 +40,3 @@
   </script>
 </body>
 </html>
-
