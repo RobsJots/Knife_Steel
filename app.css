@@ -1,7 +1,6 @@
 :root {
   --polished-bg: #e8f4ff;
   --toothy-bg: #f2f2f2;
-  --balanced-bg: #e8f9f5;
 
   --text: #1a1a1a;
   --muted: #555;
@@ -48,14 +47,14 @@ html, body {
 }
 #steelSearch {
   width: 100%;
-  max-width: 100vw; /* prevent overflow on mobile */
+  max-width: 100vw;
   padding: 12px 14px;
   border: 1px solid #ddd;
   border-radius: var(--radius);
   font-size: 1rem;
 }
 .btn-clear {
-  display: none; /* shown when input has value */
+  display: none;
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -105,16 +104,16 @@ html, body {
 /* Cards root and panels layout */
 .cards-root { padding: 16px; }
 
-/* Desktop: three panels side by side */
+/* Desktop: two panels side by side */
 @media (min-width: 1201px) {
   .cards-root {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
 }
 
-/* Tablet: stack panels but keep visuals */
+/* Tablet/mobile: stack panels */
 @media (max-width: 1200px) {
   .cards-root {
     display: grid;
@@ -134,8 +133,7 @@ html, body {
 }
 
 .panel-polished { background: var(--polished-bg); }
-.panel-toothy   { background: var(--toothy-bg); }
-.panel-balanced { background: var(--balanced-bg); }
+.panel-toothy  { background: var(--toothy-bg); }
 
 .panel-header {
   font-weight: 700;
@@ -146,10 +144,10 @@ html, body {
   border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
-/* Grid inside each panel: two cards per row on desktop */
+/* Grid inside each panel: three cards per row on desktop */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
   gap: 12px;
 }
 
@@ -200,7 +198,7 @@ html, body {
   transition: transform 0.2s ease;
 }
 .card details[open] summary .summary-toggle .chev {
-  transform: rotate(180deg); /* flip when open */
+  transform: rotate(180deg);
 }
 
 /* Card interior retained */
@@ -269,4 +267,3 @@ html, body {
   .panel-header { font-size: 1.1rem; }
   .card summary { padding: 12px 14px; }
 }
-
