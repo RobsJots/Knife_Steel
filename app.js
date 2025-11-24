@@ -1,6 +1,11 @@
 // Knife Steel Reference v4.0.0 — production-ready
 // Robust, data-driven, supports grindRecommendations, global grind filter, per-card grind selector, compare tray.
-// Replace existing app.js with this file and hard-refresh after updating steels.json.
+// Fixes:
+// - Wires global grind to #grindSelect (not #grindFilter)
+// - Defensive fetch with cache-busting and fallback parse
+// - Mobile pull-to-refresh (works with service worker)
+// - Safe empty/error rendering so cards never disappear
+// - Preserves manufacturer icon in card body
 
 (function () {
   "use strict";
@@ -24,8 +29,14 @@
     steels: [],
     index: [],
     compare: [],
-    activeGlobalGrind: ""
+    activeGlobalGrind: "",
+    appVersion: readAppVersion()
   };
+
+  function readAppVersion() {
+    var body = document.body;
+    return body && body.getAttribute("data-app-version") ? body.getAttribute("data-app-version") : "4.0.0";
+  }
 
   // --- Defaults maps (used when grindRecommendations missing) ---
   var defaultBySteelClass = {
@@ -316,7 +327,6 @@
     if (rec.notes) lines.push("Notes: " + safeText(rec.notes));
     lines.push("");
     lines.push("Suggested progression:");
-    // sensible progression based on rec.gritRange
     var progression = suggestProgression(rec.gritRange);
     progression.forEach(function (p) { lines.push("- " + p); });
     lines.push("");
@@ -325,7 +335,6 @@
   }
 
   function suggestProgression(gritRange) {
-    // crude but practical progression generator
     var g = safeText(gritRange);
     if (g.indexOf("400") !== -1 || g.indexOf("600") !== -1) {
       return ["220–400 (reprofile/damage)", "400–800 (primary edge)", "800–1000 (secondary/microbevel)", "Strop"];
@@ -344,7 +353,6 @@
       navigator.clipboard.writeText(text).then(function () {
         alert("Recipe copied to clipboard.");
       }).catch(function () {
-        // fallback
         var ta = document.createElement("textarea");
         ta.value = text;
         document.body.appendChild(ta);
@@ -357,11 +365,20 @@
     }
   }
 
-  // --- Rendering grouped panels ---
+  // --- Grouped panels rendering ---
   function renderGrouped(steels) {
     var root = el("cards");
     if (!root) return;
     root.innerHTML = "";
+
+    // Empty state if no data
+    if (!Array.isArray(steels) || steels.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.innerHTML = "<p>No steels available right now. Pull to refresh or try again later.</p>";
+      root.appendChild(empty);
+      return;
+    }
 
     var panels = [
       { key: "Polished", cls: "panel-polished", title: "Polished" },
@@ -382,12 +399,10 @@
 
       var filtered = (steels || []).filter(function (s) { return s.finish === p.key; });
 
-      // If global grind filter is active, optionally reorder by suitability (simple heuristic)
       if (state.activeGlobalGrind) {
         filtered.sort(function (a, b) {
           var ra = getRecommendation(a, state.activeGlobalGrind);
           var rb = getRecommendation(b, state.activeGlobalGrind);
-          // prefer balanced/polished for slicing if global is hollow/fullFlat etc.
           var scoreMap = { polished: 3, balanced: 2, toothy: 1 };
           var sa = scoreMap[(ra.dpsStyle || "").toLowerCase()] || 0;
           var sb = scoreMap[(rb.dpsStyle || "").toLowerCase()] || 0;
@@ -446,44 +461,125 @@
   function expandAllCards() { document.querySelectorAll(".card details").forEach(function (d) { d.open = true; }); }
   function collapseAllCards() { if (window.innerWidth < 769) document.querySelectorAll(".card details").forEach(function (d) { d.open = false; }); }
 
+  // --- Robust fetch with cache-bust & fallback ---
+  async function loadSteels() {
+    var base = "steels.json";
+    var bust = base + "?v=" + encodeURIComponent(state.appVersion);
+    try {
+      var r = await fetch(bust, { cache: "no-store" });
+      if (!r.ok) throw new Error("Failed to fetch " + bust + ": " + r.status + " " + r.statusText);
+      var text = await r.text();
+      var parsed = JSON.parse(text);
+      if (!Array.isArray(parsed)) throw new Error("steels.json root is not an array");
+      return parsed;
+    } catch (e) {
+      console.warn("Primary fetch failed, trying fallback:", e.message);
+      try {
+        var r2 = await fetch(base);
+        if (!r2.ok) throw new Error("Fallback fetch failed: " + r2.status + " " + r2.statusText);
+        var text2 = await r2.text();
+        var parsed2 = JSON.parse(text2);
+        if (!Array.isArray(parsed2)) throw new Error("steels.json root is not an array (fallback)");
+        return parsed2;
+      } catch (e2) {
+        showErrorBanner("Could not load steels.json: " + e2.message);
+        return [];
+      }
+    }
+  }
+
+  // --- Pull-to-refresh (mobile-friendly) ---
+  function enablePullToRefresh() {
+    var root = el("cards");
+    var ptr = el("ptr");
+    if (!root || !ptr) return;
+
+    var startY = 0;
+    var currentY = 0;
+    var pulling = false;
+    var threshold = 70;
+
+    root.addEventListener("touchstart", function (e) {
+      if (root.scrollTop === 0) {
+        startY = e.touches[0].clientY;
+        pulling = true;
+      } else {
+        pulling = false;
+      }
+    }, { passive: true });
+
+    root.addEventListener("touchmove", function (e) {
+      if (!pulling) return;
+      currentY = e.touches[0].clientY;
+      var delta = currentY - startY;
+      if (delta > 0) {
+        e.preventDefault();
+        ptr.classList.add("active");
+        ptr.style.transform = "translateY(" + Math.min(delta - ptr.offsetHeight, threshold) + "px)";
+        ptr.querySelector(".ptr-arrow").textContent = (delta > threshold) ? "↻" : "⬇";
+      }
+    }, { passive: false });
+
+    root.addEventListener("touchend", function () {
+      if (!pulling) return;
+      var delta = currentY - startY;
+      ptr.style.transform = "";
+      ptr.classList.remove("active");
+      pulling = false;
+      if (delta > threshold) {
+        doRefresh(ptr);
+      }
+    }, { passive: true });
+  }
+
+  async function doRefresh(ptr) {
+    try {
+      ptr.classList.add("active");
+      var arrow = ptr.querySelector(".ptr-arrow");
+      if (arrow) arrow.textContent = "⟳";
+      var data = await loadSteels();
+      state.steels = data;
+      buildIndex(state.steels);
+      renderGrouped(state.steels);
+    } catch (e) {
+      showErrorBanner("Refresh failed: " + e.message);
+    } finally {
+      setTimeout(function () {
+        ptr.classList.remove("active");
+      }, 600);
+    }
+  }
+
   // --- Init & wiring ---
-  function init() {
+  async function init() {
     var input = el("steelSearch");
     var clearBtn = el("clearSearch");
     var expandBtn = el("expandAll");
     var collapseBtn = el("collapseAll");
-    var grindFilter = el("grindFilter");
+    // FIX: wire global grind to #grindSelect (present in header)
+    var grindFilter = el("grindSelect");
     var clearCompareBtn = el("clearCompare");
     var copyRecipeBtn = el("copyRecipe");
 
     if (clearBtn) clearBtn.style.display = "none";
 
     // Load steels.json
-    fetch("steels.json", { cache: "no-store" }).then(function (r) {
-      if (!r.ok) throw new Error("Failed to fetch steels.json: " + r.status + " " + r.statusText);
-      return r.text();
-    }).then(function (text) {
-      try {
-        var parsed = JSON.parse(text);
-        if (!Array.isArray(parsed)) throw new Error("steels.json root is not an array");
-        state.steels = parsed;
-      } catch (e) {
-        showErrorBanner("Invalid steels.json: " + e.message);
-        state.steels = [];
-      }
-    }).catch(function (err) {
-      showErrorBanner("Could not load steels.json: " + err.message);
+    try {
+      state.steels = await loadSteels();
+    } catch (e) {
+      showErrorBanner("Load error: " + e.message);
       state.steels = [];
-    }).finally(function () {
-      try {
-        buildIndex(state.steels);
-        renderGrouped(state.steels);
-      } catch (e) {
-        showErrorBanner("Render error: " + e.message);
-      }
-    });
+    }
+
+    try {
+      buildIndex(state.steels);
+      renderGrouped(state.steels);
+    } catch (e) {
+      showErrorBanner("Render error: " + e.message);
+    }
 
     function updateClearVisibility() { if (!input || !clearBtn) return; clearBtn.style.display = input.value.trim().length ? "inline-block" : "none"; }
+
     if (input) {
       input.addEventListener("input", function (e) {
         updateClearVisibility();
@@ -503,14 +599,23 @@
       });
     }
 
-    if (clearBtn) clearBtn.addEventListener("click", function () { if (input) input.value = ""; updateClearVisibility(); renderSuggestions([]); renderGrouped(state.steels); scrollToCards(); });
+    if (clearBtn) clearBtn.addEventListener("click", function () {
+      if (input) input.value = "";
+      updateClearVisibility();
+      renderSuggestions([]);
+      renderGrouped(state.steels);
+      scrollToCards();
+    });
 
     if (expandBtn) expandBtn.addEventListener("click", expandAllCards);
     if (collapseBtn) collapseBtn.addEventListener("click", collapseAllCards);
 
     if (grindFilter) {
+      // initialize with current selection
+      state.activeGlobalGrind = grindFilter.value && grindFilter.value !== "all" ? grindFilter.value : "";
       grindFilter.addEventListener("change", function (e) {
-        state.activeGlobalGrind = e.target.value || "";
+        var v = e.target.value || "";
+        state.activeGlobalGrind = (v === "all") ? "" : v;
         renderGrouped(state.steels);
       });
     }
@@ -534,9 +639,12 @@
         else renderGrouped(state.steels);
       }
     });
+
+    // Pull-to-refresh wiring (requires #ptr element present in DOM)
+    enablePullToRefresh();
   }
 
   // Start
-  try { init(); } catch (e) { showErrorBanner("Initialization error: " + e.message); }
+  try { document.addEventListener("DOMContentLoaded", init); } catch (e) { showErrorBanner("Initialization error: " + e.message); }
 
 })();
