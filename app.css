@@ -156,7 +156,7 @@ html, body {
   .card-grid { grid-template-columns: 1fr; }
 }
 
-/* Card visuals preserved */
+/* Card visuals */
 .card {
   border-radius: var(--radius);
   box-shadow: 0 2px 6px var(--shadow);
@@ -165,10 +165,10 @@ html, body {
   overflow: hidden;
 }
 
-/* Mobile-only collapse using details/summary wrapper */
+/* details/summary wrapper */
 .card details { display: block; }
 
-/* Hide native marker and create custom toggle below name/HRC row */
+/* Summary toggle (mobile only); place chevron below name/HRC row */
 .card summary {
   cursor: pointer;
   padding: 12px;
@@ -183,6 +183,7 @@ html, body {
 }
 .card summary .name { font-weight: 700; font-size: 1.05rem; }
 .card summary .hrc  { font-variant: small-caps; font-size: 0.95rem; color: #333; font-weight: 600; }
+
 /* Triangle row below name/HRC */
 .card summary .summary-toggle {
   margin-top: 6px;
@@ -201,12 +202,28 @@ html, body {
   transform: rotate(180deg);
 }
 
-/* Card interior retained */
+/* Card interior; includes a title row so desktop shows name/HRC even when summary is hidden */
 .card-body {
   padding: 12px;
   display: grid;
   gap: 10px;
 }
+.card-body .card-title {
+  display: none; /* hidden on mobile to avoid duplication */
+  align-items: baseline;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.card-body .card-title .name { font-size: 1.05rem; }
+.card-body .card-title .hrc  { font-variant: small-caps; font-size: 0.95rem; color: #333; font-weight: 600; }
+
+@media (min-width: 769px) {
+  /* Desktop: always expanded; summary hidden; title visible */
+  .card summary { display: none; }
+  .card-body .card-title { display: flex; }
+}
+
+/* Other fields */
 .card .process,
 .card .mfg {
   font-size: 0.95rem;
@@ -242,14 +259,7 @@ html, body {
 .bar-green  { background-color: var(--dps-green); }
 .bar-orange { background-color: var(--dps-orange); }
 
-/* Desktop: always expanded, summary hidden */
-@media (min-width: 769px) {
-  .card details[open] .card-body,
-  .card details .card-body { display: block; }
-  .card summary { display: none; }
-}
-
-/* Footer exact text */
+/* Footer */
 .app-footer {
   text-align: center;
   padding: 16px;
@@ -260,7 +270,7 @@ html, body {
   line-height: 1.5;
 }
 
-/* Minor mobile typographic tweaks */
+/* Minor mobile tweaks */
 @media (max-width: 768px) {
   .app-header h1 { font-size: 1.25rem; }
   .panel { padding: 12px; }
