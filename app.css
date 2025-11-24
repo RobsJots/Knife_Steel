@@ -36,10 +36,15 @@ html, body {
   font-weight: 700;
   font-size: 1.6rem;
 }
+
 .search-wrap {
   position: relative;
   max-width: 100%;
   padding: 0 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
 }
 #steelSearch {
   width: 100%;
@@ -49,14 +54,25 @@ html, body {
   border-radius: var(--radius);
   font-size: 1rem;
 }
+.btn-clear {
+  display: none; /* shown when input has value */
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f7f7f7;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-clear:hover { background: #efefef; }
+
 .suggestions {
   position: absolute;
-  left: 12px; right: 12px; top: calc(100% + 6px);
+  left: 12px; right: 12px; top: calc(100% + 38px);
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  list-style: none;
-  margin: 0; padding: 6px;
+  list-style: none; margin: 0; padding: 6px;
   max-height: 240px; overflow: auto;
   box-shadow: 0 6px 16px rgba(0,0,0,0.08);
   display: none;
@@ -66,10 +82,28 @@ html, body {
 .suggestions li { padding: 8px 10px; cursor: pointer; border-radius: 6px; }
 .suggestions li:hover { background: #f6f6f6; }
 
-/* Cards root and panels layout */
-.cards-root {
-  padding: 16px;
+/* Mobile controls (expand/collapse all) */
+.mobile-controls {
+  display: none;
+  padding: 0 12px;
+  gap: 8px;
 }
+.btn {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f7f7f7;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { background: #efefef; }
+@media (max-width: 768px) {
+  .mobile-controls { display: flex; }
+}
+
+/* Cards root and panels layout */
+.cards-root { padding: 16px; }
 
 /* Desktop: three panels side by side */
 @media (min-width: 1201px) {
@@ -135,11 +169,15 @@ html, body {
 
 /* Mobile-only collapse using details/summary wrapper */
 .card details { display: block; }
+
+/* Hide native marker and create custom toggle below name/HRC row */
 .card summary {
   cursor: pointer;
   padding: 12px;
   background: #f9f9f9;
+  list-style: none;
 }
+.card summary::-webkit-details-marker { display: none; }
 .card summary .card-head {
   display: flex;
   align-items: baseline;
@@ -147,6 +185,23 @@ html, body {
 }
 .card summary .name { font-weight: 700; font-size: 1.05rem; }
 .card summary .hrc  { font-variant: small-caps; font-size: 0.95rem; color: #333; font-weight: 600; }
+/* Triangle row below name/HRC */
+.card summary .summary-toggle {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card summary .summary-toggle .chev {
+  display: inline-block;
+  transform: rotate(0deg);
+  transition: transform 0.2s ease;
+}
+.card details[open] summary .summary-toggle .chev {
+  transform: rotate(180deg); /* flip when open */
+}
 
 /* Card interior retained */
 .card-body {
@@ -214,3 +269,4 @@ html, body {
   .panel-header { font-size: 1.1rem; }
   .card summary { padding: 12px 14px; }
 }
+
