@@ -1,19 +1,19 @@
-// Knife Steel Reference v3.6.0
+// Knife Steel Reference v3.6.0 core (forward-facing version in index.html is v3.6.1)
 
 // State
 const state = { steels: [], index: [] };
 
-// Normalize strings for fuzzy search
+// Normalize strings
 const norm = (s) => s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
 
-// Parse HRC optimal to a numeric value (handles "62+", "61–62 / 61", etc.)
+// Parse HRC optimal to number
 function parseHrcOptimal(s) {
   if (!s) return Number.NEGATIVE_INFINITY;
   const m = String(s).match(/(\d+(\.\d+)?)/);
   return m ? parseFloat(m[1]) : Number.NEGATIVE_INFINITY;
 }
 
-// Build index for search (name + aliases)
+// Build search index
 function buildIndex(steels) {
   state.index = steels.map((s) => ({
     key: norm(`${s.name} ${s.aliases?.join(" ") || ""}`),
@@ -21,7 +21,7 @@ function buildIndex(steels) {
   }));
 }
 
-// Simple scoring for fuzzy search
+// Simple fuzzy scoring
 function score(key, q) {
   if (key.includes(q)) return 3;
   const qTokens = q.split(/\s+/).filter(Boolean);
@@ -53,7 +53,8 @@ function renderSuggestions(list) {
     li.textContent = steel.name;
     li.role = "option";
     li.addEventListener("click", () => {
-      document.getElementById("steelSearch").value = steel.name;
+      const input = document.getElementById("steelSearch");
+      input.value = steel.name;
       document.getElementById("clearSearch").style.display = "inline-block";
       ul.classList.remove("show");
       renderCards([steel], /*forceOpen*/ true);
@@ -71,14 +72,14 @@ function scrollToCards() {
   }
 }
 
-// Card node with mobile-only collapsible wrapper and custom toggle row
+// Card node; includes name/HRC both in summary (mobile) and in body (desktop)
 function cardNode(s, forceOpen = false) {
   const div = document.createElement("div");
   div.className = "card";
 
   const details = document.createElement("details");
   const isDesktop = window.innerWidth >= 769;
-  if (isDesktop || forceOpen) details.open = true;
+  details.open = isDesktop || !!forceOpen; // desktop expanded; mobile collapsed unless forced
 
   const summary = document.createElement("summary");
   summary.innerHTML = `
@@ -92,6 +93,10 @@ function cardNode(s, forceOpen = false) {
   const body = document.createElement("div");
   body.className = "card-body";
   body.innerHTML = `
+    <div class="card-title">
+      <div class="name">${s.name}</div>
+      <div class="hrc">${s.hrcRange} / ${s.hrcOptimal}</div>
+    </div>
     <div class="process">Process: ${s.process}</div>
     <ul class="traits">
       ${s.traits.map((t) => `<li>${t}</li>`).join("")}
@@ -152,7 +157,7 @@ function renderGrouped(steels) {
   });
 }
 
-// Render search results in a consistent grid (expanded)
+// Render search results (expanded)
 function renderCards(steels, forceOpen = true) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
@@ -224,12 +229,8 @@ async function init() {
     scrollToCards();
   });
 
-  expandBtn.addEventListener("click", () => {
-    expandAllCards();
-  });
-  collapseBtn.addEventListener("click", () => {
-    collapseAllCards();
-  });
+  expandBtn.addEventListener("click", expandAllCards);
+  collapseBtn.addEventListener("click", collapseAllCards);
 
   document.addEventListener("click", (e) => {
     const s = document.getElementById("suggestions");
@@ -237,6 +238,7 @@ async function init() {
     if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
   });
 
+  // Re-render when crossing mobile/desktop breakpoint
   let prevIsDesktop = window.innerWidth >= 769;
   window.addEventListener("resize", () => {
     const nowIsDesktop = window.innerWidth >= 769;
