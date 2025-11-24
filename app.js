@@ -1,19 +1,16 @@
-// Knife Steel Reference v3.6.0 core (forward-facing version in index.html is v3.6.1)
+// Knife Steel Reference v3.6.0 core (forward-facing version label is v3.6.1)
 
 // State
 const state = { steels: [], index: [] };
 
-// Normalize strings
 const norm = (s) => s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
 
-// Parse HRC optimal to number
 function parseHrcOptimal(s) {
   if (!s) return Number.NEGATIVE_INFINITY;
   const m = String(s).match(/(\d+(\.\d+)?)/);
   return m ? parseFloat(m[1]) : Number.NEGATIVE_INFINITY;
 }
 
-// Build search index
 function buildIndex(steels) {
   state.index = steels.map((s) => ({
     key: norm(`${s.name} ${s.aliases?.join(" ") || ""}`),
@@ -21,7 +18,6 @@ function buildIndex(steels) {
   }));
 }
 
-// Simple fuzzy scoring
 function score(key, q) {
   if (key.includes(q)) return 3;
   const qTokens = q.split(/\s+/).filter(Boolean);
@@ -43,7 +39,6 @@ function fuzzyFind(query, limit = 50) {
     .map(({ ref }) => ref);
 }
 
-// Suggestions dropdown
 function renderSuggestions(list) {
   const ul = document.getElementById("suggestions");
   ul.innerHTML = "";
@@ -57,7 +52,7 @@ function renderSuggestions(list) {
       input.value = steel.name;
       document.getElementById("clearSearch").style.display = "inline-block";
       ul.classList.remove("show");
-      renderCards([steel], /*forceOpen*/ true);
+      renderCards([steel], true);
       scrollToCards();
     });
     ul.appendChild(li);
@@ -72,14 +67,13 @@ function scrollToCards() {
   }
 }
 
-// Card node; includes name/HRC both in summary (mobile) and in body (desktop)
 function cardNode(s, forceOpen = false) {
   const div = document.createElement("div");
   div.className = "card";
 
   const details = document.createElement("details");
   const isDesktop = window.innerWidth >= 769;
-  details.open = isDesktop || !!forceOpen; // desktop expanded; mobile collapsed unless forced
+  details.open = isDesktop || !!forceOpen;
 
   const summary = document.createElement("summary");
   summary.innerHTML = `
@@ -109,7 +103,7 @@ function cardNode(s, forceOpen = false) {
           <div class="${row.bar}"></div>
           <div>${row.text}</div>
         </div>
-      `).join("")}
+      ).join("")}
     </div>
   `;
 
@@ -125,14 +119,13 @@ function cardNode(s, forceOpen = false) {
   return div;
 }
 
-// Render two panels: Polished and Toothy
 function renderGrouped(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
 
   const panels = [
-    { key: "Polished", cls: "panel-polished", title: "Polished Finish" },
-    { key: "Toothy",   cls: "panel-toothy",   title: "Toothy Finish" }
+    { key: "Polished", cls: "panel-polished", title: "Polished" },
+    { key: "Toothy",   cls: "panel-toothy",   title: "Toothy" }
   ];
 
   panels.forEach(({ key, cls, title }) => {
@@ -157,7 +150,6 @@ function renderGrouped(steels) {
   });
 }
 
-// Render search results (expanded)
 function renderCards(steels, forceOpen = true) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
@@ -167,7 +159,6 @@ function renderCards(steels, forceOpen = true) {
   root.appendChild(grid);
 }
 
-// Expand/collapse helpers
 function expandAllCards() {
   document.querySelectorAll(".card details").forEach(d => { d.open = true; });
 }
@@ -177,12 +168,14 @@ function collapseAllCards() {
   }
 }
 
-// Init
 async function init() {
-  const resp = await fetch("steels.json", { cache: "no-store" });
-  state.steels = await resp.json();
+  try {
+    const resp = await fetch("steels.json", { cache: "no-store" });
+    state.steels = await resp.json();
+  } catch {
+    state.steels = [];
+  }
   buildIndex(state.steels);
-
   renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
@@ -213,7 +206,7 @@ async function init() {
       const results = fuzzyFind(q, 50);
       renderSuggestions([]);
       if (results.length) {
-        renderCards(results, /*forceOpen*/ true);
+        renderCards(results, true);
       } else {
         renderGrouped(state.steels);
       }
@@ -238,7 +231,6 @@ async function init() {
     if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
   });
 
-  // Re-render when crossing mobile/desktop breakpoint
   let prevIsDesktop = window.innerWidth >= 769;
   window.addEventListener("resize", () => {
     const nowIsDesktop = window.innerWidth >= 769;
@@ -246,7 +238,7 @@ async function init() {
       prevIsDesktop = nowIsDesktop;
       const query = input.value.trim();
       if (query) {
-        renderCards(fuzzyFind(query), /*forceOpen*/ true);
+        renderCards(fuzzyFind(query), true);
       } else {
         renderGrouped(state.steels);
       }
