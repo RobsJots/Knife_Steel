@@ -1,39 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Knife Steel & Sharpening Reference v3.4.1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app.css" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Knife Steel Reference v3.4.1</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="app.css">
+  <meta name="theme-color" content="#ffffff">
 </head>
 <body>
   <div class="ksr-app">
     <header class="app-header">
-      <h1>Knife Steel & Sharpening Reference v3.4.1</h1>
+      <h1>Knife Steel Reference v3.4.1</h1>
       <div class="search-wrap">
-        <input id="steelSearch" type="text" placeholder="Search steel…" aria-label="Search steel" />
-        <ul id="suggestions" class="suggestions" role="listbox"></ul>
+        <input id="steelSearch" type="text" placeholder="Search steels, aliases, traits...">
+        <ul id="suggestions" class="suggestions"></ul>
       </div>
     </header>
 
-    <main id="cards" class="panels">
-      <!-- Three panels (Polished, Toothy, Balanced) are injected here by app.js -->
+    <main class="panels">
+      <section class="panel panel-polished">
+        <h2 class="panel-header">Polished finish</h2>
+        <div id="cards-polished" class="card-grid"></div>
+      </section>
+
+      <section class="panel panel-toothy">
+        <h2 class="panel-header">Toothy finish</h2>
+        <div id="cards-toothy" class="card-grid"></div>
+      </section>
+
+      <section class="panel panel-balanced">
+        <h2 class="panel-header">Balanced finish</h2>
+        <div id="cards-balanced" class="card-grid"></div>
+      </section>
     </main>
 
     <footer class="app-footer">
-      <div class="version">Knife Steel & Sharpening Reference v3.4.1</div>
+      <div class="version">Version: v3.4.1</div>
       <div class="legend">
-        <span>🛡️ Toughness</span>
-        <span>💧 Corrosion Resistance</span>
-        <span>🪨 Sharpening Ease</span>
-        <span>⚙️ Carbide Profile</span>
-        <span>🏭 Manufacturers who frequently hit optimal HRC</span>
+        <span><span class="legend-bar bar-green"></span> Edge retention</span>
+        <span><span class="legend-bar bar-orange"></span> Chipping resistance</span>
       </div>
     </footer>
   </div>
 
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
+
