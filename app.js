@@ -1,4 +1,4 @@
-// Knife Steel Reference v3.5.1
+// Knife Steel Reference v3.6.0
 
 // State
 const state = { steels: [], index: [] };
@@ -78,7 +78,7 @@ function cardNode(s, forceOpen = false) {
 
   const details = document.createElement("details");
   const isDesktop = window.innerWidth >= 769;
-  if (isDesktop || forceOpen) details.open = true; // desktop or forced open after search
+  if (isDesktop || forceOpen) details.open = true;
 
   const summary = document.createElement("summary");
   summary.innerHTML = `
@@ -108,7 +108,6 @@ function cardNode(s, forceOpen = false) {
     </div>
   `;
 
-  // Keep toggle text accurate on open/close
   details.addEventListener("toggle", () => {
     const txt = details.open ? "collapse" : "expand";
     const toggle = summary.querySelector(".summary-toggle");
@@ -121,18 +120,17 @@ function cardNode(s, forceOpen = false) {
   return div;
 }
 
-// Render grouped panels with ascending HRC (three side-by-side panels on desktop)
+// Render two panels: Polished and Toothy
 function renderGrouped(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
 
-  const finishes = [
+  const panels = [
     { key: "Polished", cls: "panel-polished", title: "Polished Finish" },
-    { key: "Toothy",   cls: "panel-toothy",   title: "Toothy Finish" },
-    { key: "Balanced", cls: "panel-balanced", title: "Balanced Finish" }
+    { key: "Toothy",   cls: "panel-toothy",   title: "Toothy Finish" }
   ];
 
-  finishes.forEach(({ key, cls, title }) => {
+  panels.forEach(({ key, cls, title }) => {
     const section = document.createElement("section");
     section.className = `panel ${cls}`;
 
@@ -164,12 +162,11 @@ function renderCards(steels, forceOpen = true) {
   root.appendChild(grid);
 }
 
-// Expand/collapse helpers (mobile focus but work universally)
+// Expand/collapse helpers
 function expandAllCards() {
   document.querySelectorAll(".card details").forEach(d => { d.open = true; });
 }
 function collapseAllCards() {
-  // Only collapse on mobile; desktop is always expanded by design
   if (window.innerWidth < 769) {
     document.querySelectorAll(".card details").forEach(d => { d.open = false; });
   }
@@ -181,7 +178,6 @@ async function init() {
   state.steels = await resp.json();
   buildIndex(state.steels);
 
-  // Default: grouped view (3 panels, ascending HRC)
   renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
@@ -189,7 +185,6 @@ async function init() {
   const expandBtn = document.getElementById("expandAll");
   const collapseBtn = document.getElementById("collapseAll");
 
-  // Clear button visibility toggle
   function updateClearVisibility() {
     clearBtn.style.display = input.value.trim().length ? "inline-block" : "none";
   }
@@ -242,7 +237,6 @@ async function init() {
     if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
   });
 
-  // Re-render when crossing mobile/desktop breakpoint to keep collapse state correct
   let prevIsDesktop = window.innerWidth >= 769;
   window.addEventListener("resize", () => {
     const nowIsDesktop = window.innerWidth >= 769;
@@ -253,12 +247,9 @@ async function init() {
         renderCards(fuzzyFind(query), /*forceOpen*/ true);
       } else {
         renderGrouped(state.steels);
-        // On mobile after resize down, cards start collapsed by default;
-        // users can use Expand all if desired.
       }
     }
   });
 }
 
 init();
-
