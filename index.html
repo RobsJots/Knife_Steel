@@ -1,49 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
-  <title>Knife Steel Reference v3.6.1</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Knife Steel Reference v4.0.0</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="app.css" />
   <meta name="theme-color" content="#ffffff" />
 </head>
 <body>
   <header class="app-header">
-    <h1>Knife Steel Reference v3.6.1</h1>
+    <h1>Knife Steel Reference v4.0.0</h1>
 
     <div class="search-wrap">
-      <input
-        id="steelSearch"
-        type="text"
-        placeholder="Search for steels"
-        aria-label="Search for steels"
-      />
+      <input id="steelSearch" type="text" placeholder="Search for steels" aria-label="Search for steels" />
       <button id="clearSearch" class="btn-clear" aria-label="Clear search">Clear</button>
       <ul id="suggestions" class="suggestions" role="listbox" aria-label="Steel suggestions"></ul>
     </div>
 
-    <div class="mobile-controls" aria-label="Mobile expand collapse controls">
-      <button id="expandAll" class="btn" type="button">Expand all</button>
-      <button id="collapseAll" class="btn" type="button">Collapse all</button>
+    <div class="controls-row">
+      <div class="global-filters">
+        <label for="grindFilter">Grind:</label>
+        <select id="grindFilter" aria-label="Global grind filter">
+          <option value="">All</option>
+          <option value="fullFlat">Full flat</option>
+          <option value="hollow">Hollow</option>
+          <option value="convex">Convex</option>
+          <option value="saber">Saber</option>
+          <option value="scandi">Scandi</option>
+          <option value="chisel">Chisel</option>
+          <option value="compound">Compound</option>
+          <option value="tanto">Tanto</option>
+          <option value="microbevel">Microbevel-focused</option>
+        </select>
+      </div>
+
+      <div class="mobile-controls" aria-label="Mobile expand collapse controls">
+        <button id="expandAll" class="btn" type="button">Expand all</button>
+        <button id="collapseAll" class="btn" type="button">Collapse all</button>
+      </div>
     </div>
   </header>
 
   <main id="cards" class="cards-root" aria-live="polite"></main>
 
+  <aside id="compareTray" class="compare-tray" aria-label="Comparison tray" hidden>
+    <div class="compare-header">
+      <strong>Compare</strong>
+      <button id="clearCompare" class="btn">Clear</button>
+    </div>
+    <div id="compareList" class="compare-list"></div>
+    <div class="compare-actions">
+      <button id="copyRecipe" class="btn">Copy Recipes</button>
+    </div>
+  </aside>
+
   <footer class="app-footer">
-    © 2025 Knife Steel & Sharpening Reference<br />
-    Icons: 🛡️ Toughness • 💧 Corrosion • 🪨 Sharpening ease/difficulty • ⚙️ Carbide content 🏭 Manufacturers who frequently produce optimal HRC knives
+    © 2025 Knife Steel & Sharpening Reference — v4.0.0<br />
+    Icons: 🛡️ Toughness • 💧 Corrosion • 🪨 Sharpening ease/difficulty • ⚙️ Carbide content
   </footer>
 
   <script src="app.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("sw.js").catch(() => {});
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () {});
       });
     }
   </script>
