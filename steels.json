@@ -194,9 +194,6 @@
       { "bar": "bar-orange", "text": "20 DPS – improved stability for hard materials" }
     ]
   },
-
-  /* --- TOOTHY PANEL --- */
-
   {
     "name": "154CM",
     "finish": "Toothy",
@@ -483,3 +480,4 @@
     ]
   }
 ]
+
