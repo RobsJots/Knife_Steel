@@ -6,34 +6,20 @@
     name="viewport"
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   />
-  <title>Knife Steel Reference v3.5.1</title>
+  <title>Knife Steel Reference v3.6.0</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="app.css" />
   <meta name="theme-color" content="#ffffff" />
 </head>
 <body>
   <header class="app-header">
-    <h1>Knife Steel Reference v3.5.1</h1>
-
+    <h1>Knife Steel Reference v3.6.0</h1>
     <div class="search-wrap">
-      <input
-        id="steelSearch"
-        type="text"
-        placeholder="Search for steels"
-        aria-label="Search for steels"
-      />
-      <button id="clearSearch" class="btn-clear" aria-label="Clear search">Clear</button>
+      <input id="steelSearch" type="text" placeholder="Search for steels" aria-label="Search for steels" />
       <ul id="suggestions" class="suggestions" role="listbox" aria-label="Steel suggestions"></ul>
-    </div>
-
-    <!-- Mobile-only bulk expand/collapse controls -->
-    <div class="mobile-controls" aria-label="Mobile expand collapse controls">
-      <button id="expandAll" class="btn" type="button">Expand all</button>
-      <button id="collapseAll" class="btn" type="button">Collapse all</button>
     </div>
   </header>
 
-  <!-- Root where grouped panels render -->
   <main id="cards" class="cards-root" aria-live="polite"></main>
 
   <footer class="app-footer">
@@ -51,4 +37,3 @@
   </script>
 </body>
 </html>
-
