@@ -1,52 +1,118 @@
-// app.js — hardened debug-friendly v3.6.1
-// Replace your existing app.js with this file and hard-refresh (Ctrl+F5)
+// Knife Steel Reference v4.0.0 — production-ready
+// Robust, data-driven, supports grindRecommendations, global grind filter, per-card grind selector, compare tray.
+// Replace existing app.js with this file and hard-refresh after updating steels.json.
 
 (function () {
-  'use strict';
+  "use strict";
 
-  // Simple DOM helper to show an error banner
-  function showErrorBanner(msg) {
-    let banner = document.getElementById('ksr-error-banner');
-    if (!banner) {
-      banner = document.createElement('div');
-      banner.id = 'ksr-error-banner';
-      banner.style.background = '#ffecec';
-      banner.style.color = '#900';
-      banner.style.padding = '12px';
-      banner.style.border = '1px solid #f5c2c2';
-      banner.style.borderRadius = '6px';
-      banner.style.margin = '12px';
-      banner.style.fontWeight = '700';
-      banner.style.textAlign = 'center';
-      const root = document.querySelector('.cards-root') || document.body;
-      root.parentNode.insertBefore(banner, root);
-    }
-    banner.textContent = 'Error: ' + msg;
-    console.error('KSR ERROR:', msg);
-  }
-
-  // Minimal safe helpers
-  var state = { steels: [], index: [] };
-
+  // --- Utilities ---
+  function el(id) { return document.getElementById(id); }
+  function safeText(s) { return String(s == null ? "" : s); }
   function norm(s) {
-    if (!s) return '';
-    try {
-      return String(s).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
-    } catch (e) {
-      return String(s).toLowerCase();
-    }
+    if (!s) return "";
+    try { return String(s).toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, ""); }
+    catch (e) { return String(s).toLowerCase(); }
   }
-
   function parseHrcOptimal(s) {
     if (!s) return Number.NEGATIVE_INFINITY;
     var m = String(s).match(/(\d+(\.\d+)?)/);
     return m ? parseFloat(m[1]) : Number.NEGATIVE_INFINITY;
   }
 
+  // --- State ---
+  var state = {
+    steels: [],
+    index: [],
+    compare: [],
+    activeGlobalGrind: ""
+  };
+
+  // --- Defaults maps (used when grindRecommendations missing) ---
+  var defaultBySteelClass = {
+    vanadiumHeavy: {
+      fullFlat: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Favor toothiness to preserve bite around hard vanadium carbides." },
+      hollow: { dpsStyle: "toothy", gritRange: "600–1000", microbevel: { angle: "0.5°", grit: "1000" }, notes: "Thin hollows risk microchipping; keep some tooth." },
+      convex: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "1°", grit: "800" }, notes: "Convex strength allows slightly finer finish but keep bite." },
+      saber: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "1°", grit: "800" }, notes: "Thicker wedge needs bite." },
+      scandi: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Scandi benefits from bite." },
+      chisel: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Single-side geometry amplifies bite." },
+      compound: { dpsStyle: "toothy", gritRange: "400–1000", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Match the working bevel." },
+      tanto: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Tip strength and bite are critical." },
+      microbevel: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1.5°", grit: "800–1000" }, notes: "Polish microbevel conservatively." }
+    },
+    fineCarbide: {
+      fullFlat: { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1500–3000" }, notes: "Fine carbides tolerate higher polish for slicing." },
+      hollow: { dpsStyle: "polished", gritRange: "1000–3000", microbevel: { angle: "0.5°", grit: "3000+" }, notes: "Thin hollows benefit from high polish." },
+      convex: { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1500" }, notes: "Convex strength allows finer finish." },
+      saber: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "1°", grit: "1200" }, notes: "Thicker wedge needs some bite." },
+      scandi: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "0.5°–1°", grit: "1200" }, notes: "Scandi can be balanced for clean woodwork." },
+      chisel: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "0.5°–1°", grit: "1200" }, notes: "Single-side geometry; adjust for use." },
+      compound: { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1500" }, notes: "Match working bevel." },
+      tanto: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "0.5°–1°", grit: "1200" }, notes: "Tip may need slightly coarser finish." },
+      microbevel: { dpsStyle: "polished", gritRange: "1000–3000", microbevel: { angle: "0.5°", grit: "3000+" }, notes: "Polish microbevel for slicing." }
+    },
+    toolSteel: {
+      fullFlat: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Tool steels favor toothy finishes for bite and durability." },
+      hollow: { dpsStyle: "toothy", gritRange: "600–1000", microbevel: { angle: "0.5°", grit: "1000" }, notes: "Thin hollows risk chipping; keep some tooth." },
+      convex: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "1°", grit: "800" }, notes: "Convex helps strength; keep bite." },
+      saber: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "1°", grit: "800" }, notes: "Durable wedge needs bite." },
+      scandi: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Scandi benefits from bite." },
+      chisel: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Single-side geometry amplifies bite." },
+      compound: { dpsStyle: "toothy", gritRange: "400–1000", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Match working bevel." },
+      tanto: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Tip strength and bite are critical." },
+      microbevel: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1.5°", grit: "800–1000" }, notes: "Polish microbevel conservatively." }
+    },
+    nitrogenSteel: {
+      fullFlat: { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1500–3000" }, notes: "Nitrogen steels take polish well and remain tough." },
+      hollow: { dpsStyle: "polished", gritRange: "1000–3000", microbevel: { angle: "0.5°", grit: "3000+" }, notes: "Thin hollows benefit from high polish." },
+      convex: { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1500" }, notes: "Convex strength allows finer finish." },
+      saber: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "1°", grit: "1200" }, notes: "Thicker wedge needs some bite." },
+      scandi: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "0.5°–1°", grit: "1200" }, notes: "Scandi can be balanced for clean woodwork." },
+      chisel: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "0.5°–1°", grit: "1200" }, notes: "Single-side geometry; adjust for use." },
+      compound: { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1500" }, notes: "Match working bevel." },
+      tanto: { dpsStyle: "balanced", gritRange: "800–1200", microbevel: { angle: "0.5°–1°", grit: "1200" }, notes: "Tip may need slightly coarser finish." },
+      microbevel: { dpsStyle: "polished", gritRange: "1000–3000", microbevel: { angle: "0.5°", grit: "3000+" }, notes: "Polish microbevel for slicing." }
+    }
+  };
+
+  var defaultByGrind = {
+    fullFlat: { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1000–1500" }, notes: "General balanced recommendation." },
+    hollow: { dpsStyle: "polished", gritRange: "1000–3000", microbevel: { angle: "0.5°", grit: "3000+" }, notes: "Hollows favor high polish." },
+    convex: { dpsStyle: "balanced", gritRange: "600–1500", microbevel: { angle: "1°", grit: "800–1200" }, notes: "Convex is strong and versatile." },
+    saber: { dpsStyle: "toothy", gritRange: "400–1000", microbevel: { angle: "1°", grit: "800–1000" }, notes: "Saber is durable; keep bite." },
+    scandi: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Scandi benefits from bite." },
+    chisel: { dpsStyle: "toothy", gritRange: "400–1000", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Chisel is aggressive; tune to use." },
+    compound: { dpsStyle: "balanced", gritRange: "500–1500", microbevel: { angle: "0.5°–1°", grit: "800–1500" }, notes: "Hybrid — match working bevel." },
+    tanto: { dpsStyle: "toothy", gritRange: "400–1000", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Tip needs bite and toughness." },
+    microbevel: { dpsStyle: "balanced", gritRange: "800–2000", microbevel: { angle: "0.5°–1.5°", grit: "1000–3000" }, notes: "Polish microbevel to desired finish." }
+  };
+
+  // --- Error banner ---
+  function showErrorBanner(msg) {
+    var banner = document.getElementById("ksr-error-banner");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "ksr-error-banner";
+      banner.style.background = "#ffecec";
+      banner.style.color = "#900";
+      banner.style.padding = "12px";
+      banner.style.border = "1px solid #f5c2c2";
+      banner.style.borderRadius = "6px";
+      banner.style.margin = "12px";
+      banner.style.fontWeight = "700";
+      banner.style.textAlign = "center";
+      var root = document.querySelector(".cards-root") || document.body;
+      root.parentNode.insertBefore(banner, root);
+    }
+    banner.textContent = "Error: " + msg;
+    console.error("KSR ERROR:", msg);
+  }
+
+  // --- Indexing & search ---
   function buildIndex(steels) {
     state.index = steels.map(function (s) {
-      var aliases = Array.isArray(s.aliases) ? s.aliases.join(' ') : '';
-      return { key: norm(s.name + ' ' + aliases), ref: s };
+      var aliases = Array.isArray(s.aliases) ? s.aliases.join(" ") : "";
+      return { key: norm(s.name + " " + aliases + " " + (s.mfg || "")), ref: s };
     });
   }
 
@@ -73,79 +139,112 @@
       .map(function (x) { return x.ref; });
   }
 
-  function renderSuggestions(list) {
-    var ul = document.getElementById('suggestions');
-    if (!ul) return;
-    ul.innerHTML = '';
-    if (!list || list.length === 0) { ul.classList.remove('show'); return; }
-    list.forEach(function (steel) {
-      var li = document.createElement('li');
-      li.textContent = steel.name;
-      li.setAttribute('role', 'option');
-      li.addEventListener('click', function () {
-        var input = document.getElementById('steelSearch');
-        if (input) input.value = steel.name;
-        var clearBtn = document.getElementById('clearSearch');
-        if (clearBtn) clearBtn.style.display = 'inline-block';
-        ul.classList.remove('show');
-        renderCards([steel], true);
-        scrollToCards();
-      });
-      ul.appendChild(li);
-    });
-    ul.classList.add('show');
-  }
-
-  function scrollToCards() {
-    var el = document.getElementById('cards');
-    if (el && typeof el.scrollIntoView === 'function') {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // --- Recommendation resolution ---
+  function getRecommendation(steel, grind) {
+    grind = grind || state.activeGlobalGrind || "fullFlat";
+    if (steel && steel.grindRecommendations && steel.grindRecommendations[grind]) {
+      return steel.grindRecommendations[grind];
     }
+    if (steel && steel.steelClass && defaultBySteelClass[steel.steelClass] && defaultBySteelClass[steel.steelClass][grind]) {
+      return defaultBySteelClass[steel.steelClass][grind];
+    }
+    return defaultByGrind[grind] || { dpsStyle: "balanced", gritRange: "800–1500", microbevel: { angle: "0.5°–1°", grit: "1000" }, notes: "" };
   }
 
-  function safeText(s) { return String(s == null ? '' : s); }
+  // --- Rendering helpers ---
+  function createDpsHtml(dpsArray) {
+    if (!Array.isArray(dpsArray)) return "";
+    return dpsArray.map(function (row) {
+      var bar = safeText(row.bar || "bar-green");
+      var text = safeText(row.text || "");
+      return '<div class="dps-row"><div class="' + bar + '"></div><div>' + text + "</div></div>";
+    }).join("");
+  }
 
-  function cardNode(s, forceOpen) {
-    forceOpen = !!forceOpen;
-    var div = document.createElement('div');
-    div.className = 'card';
+  function cardNode(s) {
+    var div = document.createElement("div");
+    div.className = "card";
 
-    var details = document.createElement('details');
+    var details = document.createElement("details");
     var isDesktop = window.innerWidth >= 769;
-    details.open = isDesktop || forceOpen;
+    details.open = isDesktop;
 
-    var summary = document.createElement('summary');
-    summary.innerHTML = '<div class="card-head"><div class="name">' + safeText(s.name) +
-      '</div><div class="hrc">' + safeText(s.hrcRange) + ' / ' + safeText(s.hrcOptimal) + '</div></div>' +
-      '<div class="summary-toggle"><span class="chev">▼</span> Tap to ' + (details.open ? 'collapse' : 'expand') + '</div>';
+    var summary = document.createElement("summary");
+    summary.innerHTML = '<div class="card-head"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
+      '<div class="summary-toggle"><span class="chev">▼</span> Tap to ' + (details.open ? "collapse" : "expand") + "</div>";
 
-    var traitsHtml = '';
-    if (Array.isArray(s.traits)) {
-      traitsHtml = s.traits.map(function (t) { return '<li>' + safeText(t) + '</li>'; }).join('');
-    }
+    var rec = getRecommendation(s, state.activeGlobalGrind || "");
 
-    var dpsHtml = '';
-    if (Array.isArray(s.dps)) {
-      dpsHtml = s.dps.map(function (row) {
-        var bar = safeText(row.bar || 'bar-green');
-        var text = safeText(row.text || '');
-        return '<div class="dps-row"><div class="' + bar + '"></div><div>' + text + '</div></div>';
-      }).join('');
-    }
+    var traitsHtml = Array.isArray(s.traits) ? s.traits.map(function (t) { return "<li>" + safeText(t) + "</li>"; }).join("") : "";
 
-    var body = document.createElement('div');
-    body.className = 'card-body';
-    body.innerHTML = '<div class="card-title"><div class="name">' + safeText(s.name) + '</div>' +
-      '<div class="hrc">' + safeText(s.hrcRange) + ' / ' + safeText(s.hrcOptimal) + '</div></div>' +
-      '<div class="process">Process: ' + safeText(s.process) + '</div>' +
-      '<ul class="traits">' + traitsHtml + '</ul>' +
-      '<div class="mfg">🏭 ' + safeText(s.mfg) + '</div>' +
-      '<span class="grit-pill">' + safeText(s.grit) + '</span>' +
-      '<div class="dps">' + dpsHtml + '</div>';
+    var dpsHtml = createDpsHtml(s.dps || []);
 
-    details.addEventListener('toggle', function () {
-      var txt = details.open ? 'collapse' : 'expand';
-      var toggle = summary.querySelector('.summary-toggle');
+    var grindOptions = ["fullFlat","hollow","convex","saber","scandi","chisel","compound","tanto","microbevel"];
+    var grindSelectHtml = '<div class="grind-select"><label>Grind</label><select class="card-grind-select">';
+    grindOptions.forEach(function (g) {
+      var label = {
+        fullFlat: "Full flat",
+        hollow: "Hollow",
+        convex: "Convex",
+        saber: "Saber",
+        scandi: "Scandi",
+        chisel: "Chisel",
+        compound: "Compound",
+        tanto: "Tanto",
+        microbevel: "Microbevel-focused"
+      }[g] || g;
+      grindSelectHtml += '<option value="' + g + '"' + (g === (state.activeGlobalGrind || "fullFlat") ? " selected" : "") + ">" + label + "</option>";
+    });
+    grindSelectHtml += "</select></div>";
+
+    var body = document.createElement("div");
+    body.className = "card-body";
+    body.innerHTML = '<div class="card-title"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
+      '<div class="process">Process: ' + safeText(s.process) + "</div>" +
+      '<ul class="traits">' + traitsHtml + "</ul>" +
+      '<div class="mfg">🏭 ' + safeText(s.mfg) + "</div>" +
+      '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
+      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>' +
+      '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
+      '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
+      '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
+      '<div class="dps">' + dpsHtml + "</div>" +
+      grindSelectHtml +
+      '<div style="margin-top:8px;display:flex;gap:8px;justify-content:space-between;align-items:center">' +
+      '<button class="btn compare-btn">Compare</button>' +
+      '<button class="btn copy-recipe-btn">Copy Recipe</button>' +
+      "</div>";
+
+    // Event wiring for dynamic per-card grind selection
+    body.querySelector(".card-grind-select").addEventListener("change", function (e) {
+      var chosen = e.target.value;
+      var newRec = getRecommendation(s, chosen);
+      var recStyle = body.querySelector(".rec-style");
+      var recGrit = body.querySelector(".rec-grit");
+      var recMicro = body.querySelector(".rec-micro");
+      var recNotes = body.querySelector(".rec-notes");
+      if (recStyle) recStyle.textContent = safeText(newRec.dpsStyle);
+      if (recGrit) recGrit.textContent = safeText(newRec.gritRange);
+      if (recMicro) recMicro.textContent = safeText(newRec.microbevel && newRec.microbevel.angle) + " @ " + safeText(newRec.microbevel && newRec.microbevel.grit);
+      if (recNotes) recNotes.textContent = safeText(newRec.notes);
+    });
+
+    // Compare button
+    body.querySelector(".compare-btn").addEventListener("click", function () {
+      toggleCompare(s);
+    });
+
+    // Copy recipe button — builds canonical recipe from recommendation
+    body.querySelector(".copy-recipe-btn").addEventListener("click", function () {
+      var chosen = body.querySelector(".card-grind-select").value;
+      var recObj = getRecommendation(s, chosen);
+      var recipe = buildRecipeText(s, chosen, recObj);
+      copyToClipboard(recipe);
+    });
+
+    details.addEventListener("toggle", function () {
+      var txt = details.open ? "collapse" : "expand";
+      var toggle = summary.querySelector(".summary-toggle");
       if (toggle) toggle.innerHTML = '<span class="chev">▼</span> Tap to ' + txt;
     });
 
@@ -155,30 +254,149 @@
     return div;
   }
 
+  // --- Compare tray functions ---
+  function toggleCompare(steel) {
+    var idx = state.compare.findIndex(function (s) { return s.name === steel.name; });
+    if (idx === -1) {
+      if (state.compare.length >= 3) {
+        alert("Compare tray supports up to 3 items.");
+        return;
+      }
+      state.compare.push(steel);
+    } else {
+      state.compare.splice(idx, 1);
+    }
+    renderCompareTray();
+  }
+
+  function renderCompareTray() {
+    var tray = el("compareTray");
+    var list = el("compareList");
+    if (!tray || !list) return;
+    list.innerHTML = "";
+    if (state.compare.length === 0) {
+      tray.hidden = true;
+      return;
+    }
+    tray.hidden = false;
+    state.compare.forEach(function (s) {
+      var item = document.createElement("div");
+      item.className = "compare-item";
+      item.innerHTML = '<div><strong>' + safeText(s.name) + '</strong><div class="muted">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
+        '<div><button class="btn remove-compare">Remove</button></div>';
+      item.querySelector(".remove-compare").addEventListener("click", function () {
+        toggleCompare(s);
+      });
+      list.appendChild(item);
+    });
+  }
+
+  function clearCompare() {
+    state.compare = [];
+    renderCompareTray();
+  }
+
+  function copyCompareRecipes() {
+    if (state.compare.length === 0) return;
+    var text = state.compare.map(function (s) {
+      var rec = getRecommendation(s, state.activeGlobalGrind || "");
+      return buildRecipeText(s, state.activeGlobalGrind || "fullFlat", rec);
+    }).join("\n\n---\n\n");
+    copyToClipboard(text);
+  }
+
+  // --- Recipe builder and clipboard ---
+  function buildRecipeText(steel, grind, rec) {
+    var lines = [];
+    lines.push("Steel: " + safeText(steel.name) + " (" + safeText(steel.hrcRange) + " / " + safeText(steel.hrcOptimal) + ")");
+    lines.push("Grind: " + (grind || "fullFlat"));
+    lines.push("Recommended finish: " + safeText(rec.dpsStyle));
+    lines.push("Grit range: " + safeText(rec.gritRange));
+    if (rec.microbevel) lines.push("Microbevel: " + safeText(rec.microbevel.angle) + " @ " + safeText(rec.microbevel.grit));
+    if (rec.notes) lines.push("Notes: " + safeText(rec.notes));
+    lines.push("");
+    lines.push("Suggested progression:");
+    // sensible progression based on rec.gritRange
+    var progression = suggestProgression(rec.gritRange);
+    progression.forEach(function (p) { lines.push("- " + p); });
+    lines.push("");
+    lines.push("Strop: light leather with compound; 10-30 passes depending on steel and grit.");
+    return lines.join("\n");
+  }
+
+  function suggestProgression(gritRange) {
+    // crude but practical progression generator
+    var g = safeText(gritRange);
+    if (g.indexOf("400") !== -1 || g.indexOf("600") !== -1) {
+      return ["220–400 (reprofile/damage)", "400–800 (primary edge)", "800–1000 (secondary/microbevel)", "Strop"];
+    }
+    if (g.indexOf("800") !== -1 || g.indexOf("1000") !== -1) {
+      return ["400–800 (primary)", "800–1500 (refine)", "1500–3000 (polish microbevel if desired)", "Strop"];
+    }
+    if (g.indexOf("1500") !== -1 || g.indexOf("3000") !== -1) {
+      return ["800–1500 (primary)", "1500–3000 (polish)", "3000+ (final polish)", "Strop"];
+    }
+    return ["400–800", "800–1500", "Strop"];
+  }
+
+  function copyToClipboard(text) {
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        alert("Recipe copied to clipboard.");
+      }).catch(function () {
+        // fallback
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); alert("Recipe copied to clipboard."); } catch (e) { alert("Copy failed."); }
+        document.body.removeChild(ta);
+      });
+    } catch (e) {
+      alert("Copy not supported.");
+    }
+  }
+
+  // --- Rendering grouped panels ---
   function renderGrouped(steels) {
-    var root = document.getElementById('cards');
+    var root = el("cards");
     if (!root) return;
-    root.innerHTML = '';
+    root.innerHTML = "";
 
     var panels = [
-      { key: 'Polished', cls: 'panel-polished', title: 'Polished' },
-      { key: 'Toothy', cls: 'panel-toothy', title: 'Toothy' }
+      { key: "Polished", cls: "panel-polished", title: "Polished" },
+      { key: "Toothy", cls: "panel-toothy", title: "Toothy" }
     ];
 
     panels.forEach(function (p) {
-      var section = document.createElement('section');
-      section.className = 'panel ' + p.cls;
+      var section = document.createElement("section");
+      section.className = "panel " + p.cls;
 
-      var header = document.createElement('h2');
-      header.className = 'panel-header';
+      var header = document.createElement("h2");
+      header.className = "panel-header";
       header.textContent = p.title;
       section.appendChild(header);
 
-      var grid = document.createElement('div');
-      grid.className = 'card-grid';
+      var grid = document.createElement("div");
+      grid.className = "card-grid";
 
       var filtered = (steels || []).filter(function (s) { return s.finish === p.key; });
-      filtered.sort(function (a, b) { return parseHrcOptimal(a.hrcOptimal) - parseHrcOptimal(b.hrcOptimal); });
+
+      // If global grind filter is active, optionally reorder by suitability (simple heuristic)
+      if (state.activeGlobalGrind) {
+        filtered.sort(function (a, b) {
+          var ra = getRecommendation(a, state.activeGlobalGrind);
+          var rb = getRecommendation(b, state.activeGlobalGrind);
+          // prefer balanced/polished for slicing if global is hollow/fullFlat etc.
+          var scoreMap = { polished: 3, balanced: 2, toothy: 1 };
+          var sa = scoreMap[(ra.dpsStyle || "").toLowerCase()] || 0;
+          var sb = scoreMap[(rb.dpsStyle || "").toLowerCase()] || 0;
+          return sb - sa;
+        });
+      } else {
+        filtered.sort(function (a, b) { return parseHrcOptimal(a.hrcOptimal) - parseHrcOptimal(b.hrcOptimal); });
+      }
+
       filtered.forEach(function (s) { grid.appendChild(cardNode(s)); });
 
       section.appendChild(grid);
@@ -186,83 +404,96 @@
     });
   }
 
+  // --- Suggestions dropdown ---
+  function renderSuggestions(list) {
+    var ul = el("suggestions");
+    if (!ul) return;
+    ul.innerHTML = "";
+    if (!list || list.length === 0) { ul.classList.remove("show"); return; }
+    list.forEach(function (steel) {
+      var li = document.createElement("li");
+      li.textContent = steel.name;
+      li.setAttribute("role", "option");
+      li.addEventListener("click", function () {
+        var input = el("steelSearch");
+        if (input) input.value = steel.name;
+        var clearBtn = el("clearSearch");
+        if (clearBtn) clearBtn.style.display = "inline-block";
+        renderCards([steel], true);
+        scrollToCards();
+      });
+      ul.appendChild(li);
+    });
+    ul.classList.add("show");
+  }
+
+  function scrollToCards() {
+    var elc = el("cards");
+    if (elc && typeof elc.scrollIntoView === "function") elc.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function renderCards(steels, forceOpen) {
-    var root = document.getElementById('cards');
+    var root = el("cards");
     if (!root) return;
-    root.innerHTML = '';
-    var grid = document.createElement('div');
-    grid.className = 'card-grid';
-    (steels || []).forEach(function (s) { grid.appendChild(cardNode(s, forceOpen)); });
+    root.innerHTML = "";
+    var grid = document.createElement("div");
+    grid.className = "card-grid";
+    (steels || []).forEach(function (s) { grid.appendChild(cardNode(s)); });
     root.appendChild(grid);
   }
 
-  function expandAllCards() {
-    document.querySelectorAll('.card details').forEach(function (d) { d.open = true; });
-  }
-  function collapseAllCards() {
-    if (window.innerWidth < 769) {
-      document.querySelectorAll('.card details').forEach(function (d) { d.open = false; });
-    }
-  }
+  // --- Expand/collapse helpers ---
+  function expandAllCards() { document.querySelectorAll(".card details").forEach(function (d) { d.open = true; }); }
+  function collapseAllCards() { if (window.innerWidth < 769) document.querySelectorAll(".card details").forEach(function (d) { d.open = false; }); }
 
-  // Init with robust error handling
+  // --- Init & wiring ---
   function init() {
-    var input = document.getElementById('steelSearch');
-    var clearBtn = document.getElementById('clearSearch');
-    var expandBtn = document.getElementById('expandAll');
-    var collapseBtn = document.getElementById('collapseAll');
+    var input = el("steelSearch");
+    var clearBtn = el("clearSearch");
+    var expandBtn = el("expandAll");
+    var collapseBtn = el("collapseAll");
+    var grindFilter = el("grindFilter");
+    var clearCompareBtn = el("clearCompare");
+    var copyRecipeBtn = el("copyRecipe");
 
-    if (clearBtn) clearBtn.style.display = 'none';
+    if (clearBtn) clearBtn.style.display = "none";
 
     // Load steels.json
-    fetch('steels.json', { cache: 'no-store' })
-      .then(function (r) {
-        if (!r.ok) throw new Error('Failed to fetch steels.json: ' + r.status + ' ' + r.statusText);
-        return r.text();
-      })
-      .then(function (text) {
-        try {
-          var parsed = JSON.parse(text);
-          if (!Array.isArray(parsed)) throw new Error('steels.json root is not an array');
-          state.steels = parsed;
-        } catch (e) {
-          showErrorBanner('Invalid steels.json: ' + e.message);
-          state.steels = [];
-        }
-      })
-      .catch(function (err) {
-        showErrorBanner('Could not load steels.json: ' + err.message);
+    fetch("steels.json", { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error("Failed to fetch steels.json: " + r.status + " " + r.statusText);
+      return r.text();
+    }).then(function (text) {
+      try {
+        var parsed = JSON.parse(text);
+        if (!Array.isArray(parsed)) throw new Error("steels.json root is not an array");
+        state.steels = parsed;
+      } catch (e) {
+        showErrorBanner("Invalid steels.json: " + e.message);
         state.steels = [];
-      })
-      .finally(function () {
-        try {
-          buildIndex(state.steels);
-          renderGrouped(state.steels);
-        } catch (e) {
-          showErrorBanner('Render error: ' + e.message);
-        }
-      });
+      }
+    }).catch(function (err) {
+      showErrorBanner("Could not load steels.json: " + err.message);
+      state.steels = [];
+    }).finally(function () {
+      try {
+        buildIndex(state.steels);
+        renderGrouped(state.steels);
+      } catch (e) {
+        showErrorBanner("Render error: " + e.message);
+      }
+    });
 
-    function updateClearVisibility() {
-      if (!input || !clearBtn) return;
-      clearBtn.style.display = input.value.trim().length ? 'inline-block' : 'none';
-    }
-
+    function updateClearVisibility() { if (!input || !clearBtn) return; clearBtn.style.display = input.value.trim().length ? "inline-block" : "none"; }
     if (input) {
-      input.addEventListener('input', function (e) {
+      input.addEventListener("input", function (e) {
         updateClearVisibility();
         var q = e.target.value;
-        if (!q) {
-          renderSuggestions([]);
-          renderGrouped(state.steels);
-          return;
-        }
+        if (!q) { renderSuggestions([]); renderGrouped(state.steels); return; }
         renderSuggestions(fuzzyFind(q));
       });
-
-      input.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-          var q = input.value;
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          var q = e.target.value;
           var results = fuzzyFind(q, 50);
           renderSuggestions([]);
           if (results.length) renderCards(results, true);
@@ -272,31 +503,33 @@
       });
     }
 
-    if (clearBtn) {
-      clearBtn.addEventListener('click', function () {
-        if (input) input.value = '';
-        updateClearVisibility();
-        renderSuggestions([]);
+    if (clearBtn) clearBtn.addEventListener("click", function () { if (input) input.value = ""; updateClearVisibility(); renderSuggestions([]); renderGrouped(state.steels); scrollToCards(); });
+
+    if (expandBtn) expandBtn.addEventListener("click", expandAllCards);
+    if (collapseBtn) collapseBtn.addEventListener("click", collapseAllCards);
+
+    if (grindFilter) {
+      grindFilter.addEventListener("change", function (e) {
+        state.activeGlobalGrind = e.target.value || "";
         renderGrouped(state.steels);
-        scrollToCards();
       });
     }
 
-    if (expandBtn) expandBtn.addEventListener('click', expandAllCards);
-    if (collapseBtn) collapseBtn.addEventListener('click', collapseAllCards);
+    if (clearCompareBtn) clearCompareBtn.addEventListener("click", clearCompare);
+    if (copyRecipeBtn) copyRecipeBtn.addEventListener("click", copyCompareRecipes);
 
-    document.addEventListener('click', function (e) {
-      var s = document.getElementById('suggestions');
-      var wrap = document.querySelector('.search-wrap');
-      if (s && wrap && !wrap.contains(e.target)) s.classList.remove('show');
+    document.addEventListener("click", function (e) {
+      var s = el("suggestions");
+      var wrap = document.querySelector(".search-wrap");
+      if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
     });
 
     var prevIsDesktop = window.innerWidth >= 769;
-    window.addEventListener('resize', function () {
+    window.addEventListener("resize", function () {
       var nowIsDesktop = window.innerWidth >= 769;
       if (nowIsDesktop !== prevIsDesktop) {
         prevIsDesktop = nowIsDesktop;
-        var q = (input && input.value) ? input.value.trim() : '';
+        var q = (input && input.value) ? input.value.trim() : "";
         if (q) renderCards(fuzzyFind(q), true);
         else renderGrouped(state.steels);
       }
@@ -304,7 +537,6 @@
   }
 
   // Start
-  try { init(); } catch (e) { showErrorBanner('Initialization error: ' + e.message); }
+  try { init(); } catch (e) { showErrorBanner("Initialization error: " + e.message); }
 
 })();
-
