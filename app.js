@@ -1,4 +1,4 @@
-// Knife Steel Reference v3.5
+// Knife Steel Reference v3.5.1
 
 // State
 const state = { steels: [], index: [] };
@@ -54,8 +54,9 @@ function renderSuggestions(list) {
     li.role = "option";
     li.addEventListener("click", () => {
       document.getElementById("steelSearch").value = steel.name;
+      document.getElementById("clearSearch").style.display = "inline-block";
       ul.classList.remove("show");
-      renderCards([steel]);
+      renderCards([steel], /*forceOpen*/ true);
       scrollToCards();
     });
     ul.appendChild(li);
@@ -70,21 +71,22 @@ function scrollToCards() {
   }
 }
 
-// Card node with mobile-only collapsible wrapper
-function cardNode(s) {
+// Card node with mobile-only collapsible wrapper and custom toggle row
+function cardNode(s, forceOpen = false) {
   const div = document.createElement("div");
   div.className = "card";
 
   const details = document.createElement("details");
-  if (window.innerWidth >= 769) details.open = true; // desktop open
+  const isDesktop = window.innerWidth >= 769;
+  if (isDesktop || forceOpen) details.open = true; // desktop or forced open after search
 
   const summary = document.createElement("summary");
-  // Preserve your original card-head visual inside summary for mobile collapsed view
   summary.innerHTML = `
     <div class="card-head">
       <div class="name">${s.name}</div>
       <div class="hrc">${s.hrcRange} / ${s.hrcOptimal}</div>
     </div>
+    <div class="summary-toggle"><span class="chev">▼</span> Tap to ${details.open ? "collapse" : "expand"}</div>
   `;
 
   const body = document.createElement("div");
@@ -105,6 +107,13 @@ function cardNode(s) {
       `).join("")}
     </div>
   `;
+
+  // Keep toggle text accurate on open/close
+  details.addEventListener("toggle", () => {
+    const txt = details.open ? "collapse" : "expand";
+    const toggle = summary.querySelector(".summary-toggle");
+    if (toggle) toggle.innerHTML = `<span class="chev">▼</span> Tap to ${txt}`;
+  });
 
   details.appendChild(summary);
   details.appendChild(body);
@@ -145,14 +154,25 @@ function renderGrouped(steels) {
   });
 }
 
-// Render search results in a consistent grid (no panels, keeps card visuals)
-function renderCards(steels) {
+// Render search results in a consistent grid (expanded)
+function renderCards(steels, forceOpen = true) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
   const grid = document.createElement("div");
   grid.className = "card-grid";
-  steels.forEach((s) => grid.appendChild(cardNode(s)));
+  steels.forEach((s) => grid.appendChild(cardNode(s, forceOpen)));
   root.appendChild(grid);
+}
+
+// Expand/collapse helpers (mobile focus but work universally)
+function expandAllCards() {
+  document.querySelectorAll(".card details").forEach(d => { d.open = true; });
+}
+function collapseAllCards() {
+  // Only collapse on mobile; desktop is always expanded by design
+  if (window.innerWidth < 769) {
+    document.querySelectorAll(".card details").forEach(d => { d.open = false; });
+  }
 }
 
 // Init
@@ -165,10 +185,25 @@ async function init() {
   renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
+  const clearBtn = document.getElementById("clearSearch");
+  const expandBtn = document.getElementById("expandAll");
+  const collapseBtn = document.getElementById("collapseAll");
+
+  // Clear button visibility toggle
+  function updateClearVisibility() {
+    clearBtn.style.display = input.value.trim().length ? "inline-block" : "none";
+  }
+  updateClearVisibility();
 
   input.addEventListener("input", (e) => {
     const q = e.target.value;
-    if (!q) { renderSuggestions([]); renderGrouped(state.steels); return; }
+    updateClearVisibility();
+
+    if (!q) {
+      renderSuggestions([]);
+      renderGrouped(state.steels);
+      return;
+    }
     renderSuggestions(fuzzyFind(q));
   });
 
@@ -178,12 +213,27 @@ async function init() {
       const results = fuzzyFind(q, 50);
       renderSuggestions([]);
       if (results.length) {
-        renderCards(results);
+        renderCards(results, /*forceOpen*/ true);
       } else {
         renderGrouped(state.steels);
       }
       scrollToCards();
     }
+  });
+
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    updateClearVisibility();
+    renderSuggestions([]);
+    renderGrouped(state.steels);
+    scrollToCards();
+  });
+
+  expandBtn.addEventListener("click", () => {
+    expandAllCards();
+  });
+  collapseBtn.addEventListener("click", () => {
+    collapseAllCards();
   });
 
   document.addEventListener("click", (e) => {
@@ -198,14 +248,17 @@ async function init() {
     const nowIsDesktop = window.innerWidth >= 769;
     if (nowIsDesktop !== prevIsDesktop) {
       prevIsDesktop = nowIsDesktop;
-      const query = document.getElementById("steelSearch").value.trim();
+      const query = input.value.trim();
       if (query) {
-        renderCards(fuzzyFind(query));
+        renderCards(fuzzyFind(query), /*forceOpen*/ true);
       } else {
         renderGrouped(state.steels);
+        // On mobile after resize down, cards start collapsed by default;
+        // users can use Expand all if desired.
       }
     }
   });
 }
 
 init();
+
