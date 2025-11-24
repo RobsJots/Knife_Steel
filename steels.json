@@ -1,35 +1,5 @@
 [
   {
-    "name": "154CM",
-    "finish": "Polished",
-    "aliases": ["154 CM"],
-    "hrcRange": "58–60",
-    "hrcOptimal": "59",
-    "process": "Conventional melt",
-    "traits": ["🛡️ Good toughness", "💧 High corrosion resistance", "🪨 Moderate to sharpen", "⚙️ Mixed carbides"],
-    "mfg": "Buck, Spyderco, Benchmade",
-    "grit": "600–1000 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "17 DPS – good edge retention with moderate chipping resistance" },
-      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance, slight edge retention trade-off" }
-    ]
-  },
-  {
-    "name": "S30V",
-    "finish": "Polished",
-    "aliases": ["CPM S30V"],
-    "hrcRange": "58–60",
-    "hrcOptimal": "59",
-    "process": "PM (Crucible)",
-    "traits": ["🛡️ Balanced PM toughness", "💧 Good corrosion resistance", "🪨 Moderate to sharpen — diamond/CBN recommended", "⚙️ Vanadium carbides"],
-    "mfg": "Spyderco, Benchmade, Kershaw",
-    "grit": "400–800 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "18 DPS – strong edge retention at polish" },
-      { "bar": "bar-orange", "text": "20 DPS – better chipping resistance, slight edge retention trade-off" }
-    ]
-  },
-  {
     "name": "AEB‑L",
     "finish": "Polished",
     "aliases": ["13C26", "AEBL"],
@@ -41,37 +11,127 @@
     "grit": "3000+ grit",
     "dps": [
       { "bar": "bar-green", "text": "15 DPS – superb clean cuts with stable edge retention" },
-      { "bar": "bar-orange", "text": "17 DPS – higher chipping resistance, slight edge retention trade-off" }
+      { "bar": "bar-orange", "text": "17 DPS – higher chipping resistance" }
     ]
   },
   {
-    "name": "CPM-154",
+    "name": "14C28N",
     "finish": "Polished",
-    "aliases": ["CPM 154"],
-    "hrcRange": "60–61",
-    "hrcOptimal": "61",
-    "process": "PM (Crucible)",
-    "traits": ["🛡️ Improved toughness vs 154CM", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Refined carbides"],
-    "mfg": "Bark River, TRM",
-    "grit": "400–600 grit (800 max)",
+    "aliases": ["Sandvik 14C28N"],
+    "hrcRange": "58–60",
+    "hrcOptimal": "60",
+    "process": "Conventional melt (Sandvik)",
+    "traits": ["🛡️ Balanced stainless", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Fine balanced carbides"],
+    "mfg": "Morakniv, Kershaw, Ruike, Vosteed",
+    "grit": "800–1500 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – excellent polished edge retention" },
-      { "bar": "bar-orange", "text": "20 DPS – added robustness for mixed media, minor edge retention trade-off" }
+      { "bar": "bar-green", "text": "17 DPS – good edge retention with moderate chipping resistance" },
+      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance" }
     ]
   },
   {
-    "name": "20CV",
+    "name": "LC200N",
     "finish": "Polished",
-    "aliases": ["CPM 20CV", "M390-equivalent"],
-    "hrcRange": "60–62",
-    "hrcOptimal": "61",
-    "process": "PM (Latrobe)",
-    "traits": ["🛡️ Good toughness for high-carbide stainless", "💧 Excellent corrosion resistance", "🪨 Moderate to hard to sharpen — diamond/CBN recommended", "⚙️ High vanadium carbides"],
-    "mfg": "Benchmade, ZT, WE",
-    "grit": "400–800 grit",
+    "aliases": ["Z-FiNit"],
+    "hrcRange": "59–61",
+    "hrcOptimal": "60",
+    "process": "PM (Zapp)",
+    "traits": ["🛡️ High toughness", "💧 Exceptional corrosion resistance", "🪨 Easy to sharpen", "⚙️ Fine carbides"],
+    "mfg": "Spyderco, Custom",
+    "grit": "800–1500 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – strong edge retention at refined polish" },
-      { "bar": "bar-orange", "text": "20 DPS – added stability for abrasive media, slight edge retention trade-off" }
+      { "bar": "bar-green", "text": "17 DPS – balanced edge retention with superb corrosion resistance" },
+      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "VG-10",
+    "finish": "Polished",
+    "aliases": [],
+    "hrcRange": "59–61",
+    "hrcOptimal": "60",
+    "process": "Conventional melt (Takefu)",
+    "traits": ["🛡️ Balanced stainless", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Fine carbides"],
+    "mfg": "Spyderco, Fallkniven, Shun",
+    "grit": "800–1500 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "17 DPS – balanced edge retention with moderate bite" },
+      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "Nitro‑V",
+    "finish": "Polished",
+    "aliases": ["Nitro V"],
+    "hrcRange": "59–61",
+    "hrcOptimal": "61",
+    "process": "Conventional melt",
+    "traits": ["🛡️ Good toughness", "💧 High corrosion resistance", "🪨 Easy to sharpen", "⚙️ Nitrogen alloyed fine carbides"],
+    "mfg": "Civivi, Sencut, Kansept, Vosteed",
+    "grit": "800–1500 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "18 DPS – decent edge retention with moderate chip resistance" },
+      { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "440C",
+    "finish": "Polished",
+    "aliases": [],
+    "hrcRange": "57–59",
+    "hrcOptimal": "58",
+    "process": "Conventional melt",
+    "traits": ["🛡️ Moderate toughness", "💧 High corrosion resistance", "🪨 Easy to sharpen", "⚙️ Coarser carbides"],
+    "mfg": "Buck, Case, CRKT",
+    "grit": "800–1500 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "16 DPS – decent edge retention with moderate chipping resistance" },
+      { "bar": "bar-orange", "text": "18 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "9Cr13MoV",
+    "finish": "Polished",
+    "aliases": ["9Cr"],
+    "hrcRange": "58–60",
+    "hrcOptimal": "60",
+    "process": "Conventional melt",
+    "traits": ["🛡️ Budget stainless", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Moderate carbides"],
+    "mfg": "Ganzo, Sanrenmu, Civivi, Vosteed",
+    "grit": "800–1000 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "18 DPS – utility bite with dependable edge retention" },
+      { "bar": "bar-orange", "text": "20 DPS – improved stability for rough tasks" }
+    ]
+  },
+  {
+    "name": "AUS-8",
+    "finish": "Polished",
+    "aliases": ["AUS8"],
+    "hrcRange": "57–59",
+    "hrcOptimal": "58",
+    "process": "Conventional melt (Japanese)",
+    "traits": ["🛡️ Balanced stainless", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Moderate carbides"],
+    "mfg": "Cold Steel, Ontario, SOG",
+    "grit": "800–1000 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "16 DPS – decent edge retention with moderate chipping resistance" },
+      { "bar": "bar-orange", "text": "18 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "8Cr13MoV",
+    "finish": "Polished",
+    "aliases": ["8Cr"],
+    "hrcRange": "57–59",
+    "hrcOptimal": "58",
+    "process": "Conventional melt (Chinese)",
+    "traits": ["🛡️ Budget stainless", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Moderate carbides"],
+    "mfg": "Kershaw, CRKT, Ganzo",
+    "grit": "800–1000 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "16 DPS – utility bite with moderate retention" },
+      { "bar": "bar-orange", "text": "18 DPS – best chipping resistance" }
     ]
   },
   {
@@ -85,7 +145,7 @@
     "mfg": "LionSteel, Bark River, ZT, Rike",
     "grit": "800–1500 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – strong edge retention at polish" },
+      { "bar": "bar-green", "text": "18 DPS – strong edge retention at mid‑polish" },
       { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
     ]
   },
@@ -115,8 +175,191 @@
     "mfg": "Real Steel, Miguron, Vosteed",
     "grit": "800–1500 grit",
     "dps": [
-      { "bar": "bar-green", "text": "18 DPS – optimal edge retention at polish" },
-      { "bar": "bar-orange", "text": "20 DPS – improved chip resistance, minor edge retention trade-off" }
+      { "bar": "bar-green", "text": "18 DPS – optimal edge retention at mid‑polish" },
+      { "bar": "bar-orange", "text": "20 DPS – improved chip resistance" }
+    ]
+  },
+  {
+    "name": "AR‑RPM9",
+    "finish": "Polished",
+    "aliases": ["AR RPM9", "RPM9"],
+    "hrcRange": "59–61",
+    "hrcOptimal": "60",
+    "process": "Spray‑form (CJRB/Artisan), not PM",
+    "traits": ["🛡️ Balanced toughness", "💧 Good corrosion resistance", "🪨 Easy to moderate to sharpen", "⚙️ Moderate carbides"],
+    "mfg": "CJRB, Artisan Cutlery",
+    "grit": "800–1200 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "18 DPS – balanced EDC bite with solid edge retention" },
+      { "bar": "bar-orange", "text": "20 DPS – improved stability for hard materials" }
+    ]
+  },
+
+  /* --- TOOTHY PANEL --- */
+
+  {
+    "name": "154CM",
+    "finish": "Toothy",
+    "aliases": ["154 CM"],
+    "hrcRange": "58–60",
+    "hrcOptimal": "59",
+    "process": "Conventional melt",
+    "traits": ["🛡️ Good toughness", "💧 High corrosion resistance", "🪨 Moderate to sharpen", "⚙️ Mixed carbides"],
+    "mfg": "Buck, Spyderco, Benchmade",
+    "grit": "600–1000 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "17 DPS – good edge retention with moderate chipping resistance" },
+      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "CPM-154",
+    "finish": "Toothy",
+    "aliases": ["CPM 154"],
+    "hrcRange": "60–61",
+    "hrcOptimal": "61",
+    "process": "PM (Crucible)",
+    "traits": ["🛡️ Improved toughness vs 154CM", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Refined carbides"],
+    "mfg": "Bark River, TRM",
+    "grit": "400–600 grit (800 max)",
+    "dps": [
+      { "bar": "bar-green", "text": "18 DPS – excellent edge retention with toothy bite" },
+      { "bar": "bar-orange", "text": "20 DPS – added robustness for mixed media" }
+    ]
+  },
+  {
+    "name": "S30V",
+    "finish": "Toothy",
+    "aliases": ["CPM S30V"],
+    "hrcRange": "58–60",
+    "hrcOptimal": "59",
+    "process": "PM (Crucible)",
+    "traits": ["🛡️ Balanced PM toughness", "💧 Good corrosion resistance", "🪨 Moderate to sharpen — diamond/CBN recommended", "⚙️ Vanadium carbides"],
+    "mfg": "Spyderco, Benchmade, Kershaw",
+    "grit": "400–800 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "18 DPS – strong edge retention with toothy bite" },
+      { "bar": "bar-orange", "text": "20 DPS – better chipping resistance" }
+    ]
+  },
+  {
+    "name": "S35VN",
+    "finish": "Toothy",
+    "aliases": ["CPM S35VN"],
+    "hrcRange": "58–60",
+    "hrcOptimal": "59",
+    "process": "PM (Crucible)",
+    "traits": ["🛡️ Improved toughness vs S30V", "💧 Good corrosion resistance", "🪨 Moderate to sharpen", "⚙️ Vanadium carbides"],
+    "mfg": "Chris Reeve, Spyderco, Benchmade",
+    "grit": "600–1000 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "18 DPS – excellent edge retention with moderate chipping resistance" },
+      { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "S45VN",
+    "finish": "Toothy",
+    "aliases": ["CPM S45VN"],
+    "hrcRange": "59–61",
+    "hrcOptimal": "60",
+    "process": "PM (Crucible)",
+    "traits": ["🛡️ Higher wear resistance vs S35VN", "💧 Stainless", "🪨 Harder to sharpen — diamond/CBN recommended", "⚙️ Fine-grained"],
+    "mfg": "Spyderco, Benchmade, Custom",
+    "grit": "600–1000 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "19 DPS – very high edge retention" },
+      { "bar": "bar-orange", "text": "21 DPS – best chipping resistance" }
+    ]
+  },
+  {
+    "name": "S90V",
+    "finish": "Toothy",
+    "aliases": ["CPM S90V"],
+    "hrcRange": "59–61",
+    "hrcOptimal": "60",
+    "process": "PM (Crucible)",
+    "traits": ["🛡️ Lower toughness", "💧 Good corrosion resistance", "🪨 Very difficult to sharpen — diamond/CBN recommended", "⚙️ Very high vanadium carbides"],
+    "mfg": "Spyderco, Benchmade, Custom",
+    "grit": "400–800 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "20 DPS – extreme wear resistance with toothy edge" },
+      { "bar": "bar-orange", "text": "22 DPS – improved stability for abrasive cutting" }
+    ]
+  },
+  {
+    "name": "S110V",
+    "finish": "Toothy",
+    "aliases": ["CPM S110V"],
+    "hrcRange": "60–62",
+    "hrcOptimal": "61",
+    "process": "PM (Crucible)",
+    "traits": ["🛡️ Lower toughness", "💧 Good corrosion resistance", "🪨 Very difficult to sharpen — diamond/CBN recommended", "⚙️ Extremely high vanadium carbides"],
+    "mfg": "Spyderco, Custom",
+    "grit": "400–800 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "20 DPS – extreme edge retention with toothy bite" },
+      { "bar": "bar-orange", "text": "22 DPS – best chip resistance" }
+    ]
+  },
+  {
+    "name": "20CV",
+    "finish": "Toothy",
+    "aliases": ["CPM 20CV", "M390-equivalent"],
+    "hrcRange": "60–62",
+    "hrcOptimal": "61",
+    "process": "PM (Latrobe)",
+    "traits": ["🛡️ Good toughness for high-carbide stainless", "💧 Excellent corrosion resistance", "🪨 Moderate to hard to sharpen — diamond/CBN recommended", "⚙️ High vanadium carbides"],
+    "mfg": "Benchmade, ZT, WE",
+    "grit": "400–800 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "18 DPS – strong edge retention with toothy bite" },
+      { "bar": "bar-orange", "text": "20 DPS – added stability for abrasive media" }
+    ]
+  },
+  {
+    "name": "M390",
+    "finish": "Toothy",
+    "aliases": [],
+    "hrcRange": "60–62",
+    "hrcOptimal": "61",
+    "process": "PM (Böhler)",
+    "traits": ["🛡️ High wear resistance", "💧 Good corrosion resistance", "🪨 Harder to sharpen — diamond/CBN recommended", "⚙️ Carbide-heavy"],
+    "mfg": "Benchmade, Böker, ZT, WE, Kansept, Rike, Vosteed",
+    "grit": "600–1000 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "20 DPS – very high edge retention with moderate chip resistance" },
+      { "bar": "bar-orange", "text": "22 DPS – added stability under hard use" }
+    ]
+  },
+  {
+    "name": "M398",
+    "finish": "Toothy",
+    "aliases": [],
+    "hrcRange": "62–64",
+    "hrcOptimal": "64",
+    "process": "PM (Böhler)",
+    "traits": ["🛡️ Wear-focused stainless", "💧 High corrosion resistance", "🪨 Difficult to sharpen — diamond/CBN recommended", "⚙️ Carbide-heavy"],
+    "mfg": "Böhler customs, Spyderco (limited)",
+    "grit": "400–800 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "20 DPS – maximum edge retention with lower chip resistance" },
+      { "bar": "bar-orange", "text": "22 DPS – improved stability on hard media" }
+    ]
+  },
+  {
+    "name": "K390",
+    "finish": "Toothy",
+    "aliases": [],
+    "hrcRange": "64–66",
+    "hrcOptimal": "65",
+    "process": "PM (Böhler)",
+    "traits": ["🛡️ High wear resistance", "💧 Non-stainless", "🪨 Difficult to sharpen — diamond/CBN recommended", "⚙️ Carbide-heavy"],
+    "mfg": "Spyderco, Böhler customs",
+    "grit": "400–800 grit",
+    "dps": [
+      { "bar": "bar-green", "text": "20 DPS – very high edge retention with moderate chip resistance" },
+      { "bar": "bar-orange", "text": "22 DPS – best chip resistance" }
     ]
   },
   {
@@ -176,22 +419,7 @@
     "grit": "400–800 grit",
     "dps": [
       { "bar": "bar-green", "text": "18 DPS – aggressive bite with strong edge retention" },
-      { "bar": "bar-orange", "text": "20 DPS – improved stability at high hardness, slight edge retention trade-off" }
-    ]
-  },
-  {
-    "name": "M398",
-    "finish": "Toothy",
-    "aliases": [],
-    "hrcRange": "62–64",
-    "hrcOptimal": "64",
-    "process": "PM (Böhler)",
-    "traits": ["🛡️ Wear-focused stainless", "💧 High corrosion resistance", "🪨 Difficult to sharpen — diamond/CBN recommended", "⚙️ Carbide-heavy"],
-    "mfg": "Böhler customs, Spyderco (limited)",
-    "grit": "400–800 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "20 DPS – maximum edge retention with lower chip resistance" },
-      { "bar": "bar-orange", "text": "22 DPS – improved stability on hard media" }
+      { "bar": "bar-orange", "text": "20 DPS – improved stability at high hardness" }
     ]
   },
   {
@@ -206,22 +434,7 @@
     "grit": "600–800 grit",
     "dps": [
       { "bar": "bar-green", "text": "18 DPS – excellent edge retention with workable polish" },
-      { "bar": "bar-orange", "text": "20 DPS – increased stability on hard media, minor edge retention trade-off" }
-    ]
-  },
-  {
-    "name": "K390",
-    "finish": "Toothy",
-    "aliases": [],
-    "hrcRange": "64–66",
-    "hrcOptimal": "65",
-    "process": "PM (Böhler)",
-    "traits": ["🛡️ High wear resistance", "💧 Non-stainless", "🪨 Difficult to sharpen — diamond/CBN recommended", "⚙️ Carbide-heavy"],
-    "mfg": "Spyderco, Böhler customs",
-    "grit": "400–800 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "20 DPS – very high edge retention with moderate chip resistance" },
-      { "bar": "bar-orange", "text": "22 DPS – best chip resistance" }
+      { "bar": "bar-orange", "text": "20 DPS – increased stability on hard media" }
     ]
   },
   {
@@ -255,98 +468,8 @@
     ]
   },
   {
-    "name": "440C",
-    "finish": "Balanced",
-    "aliases": [],
-    "hrcRange": "57–59",
-    "hrcOptimal": "58",
-    "process": "Conventional melt",
-    "traits": ["🛡️ Moderate toughness", "💧 High corrosion resistance", "🪨 Easy to sharpen", "⚙️ Coarser carbides"],
-    "mfg": "Buck, Case, CRKT",
-    "grit": "800–1500 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "16 DPS – decent edge retention with moderate chipping resistance" },
-      { "bar": "bar-orange", "text": "18 DPS – best chipping resistance" }
-    ]
-  },
-  {
-    "name": "S35VN",
-    "finish": "Balanced",
-    "aliases": ["CPM S35VN"],
-    "hrcRange": "58–60",
-    "hrcOptimal": "59",
-    "process": "PM (Crucible)",
-    "traits": ["🛡️ Improved toughness vs S30V", "💧 Good corrosion resistance", "🪨 Moderate to sharpen", "⚙️ Vanadium carbides"],
-    "mfg": "Chris Reeve, Spyderco, Benchmade",
-    "grit": "600–1000 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "18 DPS – excellent edge retention with moderate chipping resistance" },
-      { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
-    ]
-  },
-  {
-    "name": "9Cr13MoV",
-    "finish": "Balanced",
-    "aliases": ["9Cr"],
-    "hrcRange": "58–60",
-    "hrcOptimal": "60",
-    "process": "Conventional melt",
-    "traits": ["🛡️ Budget stainless", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Moderate carbides"],
-    "mfg": "Ganzo, Sanrenmu, Civivi, Vosteed",
-    "grit": "800–1000 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "18 DPS – utility bite with dependable edge retention" },
-      { "bar": "bar-orange", "text": "20 DPS – improved stability for rough tasks, minor edge retention trade-off" }
-    ]
-  },
-  {
-    "name": "14C28N",
-    "finish": "Balanced",
-    "aliases": ["Sandvik 14C28N"],
-    "hrcRange": "58–60",
-    "hrcOptimal": "60",
-    "process": "Conventional melt (Sandvik)",
-    "traits": ["🛡️ Balanced stainless", "💧 Good corrosion resistance", "🪨 Easy to sharpen", "⚙️ Fine balanced carbides"],
-    "mfg": "Morakniv, Kershaw, Ruike, Vosteed",
-    "grit": "800–1500 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "17 DPS – good edge retention with moderate chipping resistance" },
-      { "bar": "bar-orange", "text": "19 DPS – best chipping resistance" }
-    ]
-  },
-  {
-    "name": "S45VN",
-    "finish": "Balanced",
-    "aliases": ["CPM S45VN"],
-    "hrcRange": "59–61",
-    "hrcOptimal": "60",
-    "process": "PM (Crucible)",
-    "traits": ["🛡️ Higher wear resistance vs S35VN", "💧 Stainless", "🪨 Harder to sharpen — diamond/CBN recommended", "⚙️ Fine-grained"],
-    "mfg": "Spyderco, Benchmade, Custom",
-    "grit": "600–1000 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "19 DPS – very high edge retention" },
-      { "bar": "bar-orange", "text": "21 DPS – best chipping resistance, slight edge retention trade-off" }
-    ]
-  },
-  {
-    "name": "AR‑RPM9",
-    "finish": "Balanced",
-    "aliases": ["AR RPM9", "RPM9"],
-    "hrcRange": "59–61",
-    "hrcOptimal": "60",
-    "process": "Spray‑form (CJRB/Artisan), not PM",
-    "traits": ["🛡️ Balanced toughness", "💧 Good corrosion resistance", "🪨 Easy to moderate to sharpen", "⚙️ Moderate carbides"],
-    "mfg": "CJRB, Artisan Cutlery",
-    "grit": "800–1200 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "18 DPS – balanced EDC bite with solid edge retention" },
-      { "bar": "bar-orange", "text": "20 DPS – improved stability for hard materials" }
-    ]
-  },
-  {
     "name": "CPM-440V (S60V)",
-    "finish": "Balanced",
+    "finish": "Toothy",
     "aliases": ["S60V", "CPM 440V"],
     "hrcRange": "59–61",
     "hrcOptimal": "60",
@@ -356,38 +479,7 @@
     "grit": "400–800 grit",
     "dps": [
       { "bar": "bar-green", "text": "18 DPS – aggressive slicing bite with long edge retention" },
-      { "bar": "bar-orange", "text": "20 DPS – added stability for abrasive cutting, slight edge retention trade-off" }
-    ]
-  },
-  {
-    "name": "Nitro‑V",
-    "finish": "Balanced",
-    "aliases": ["Nitro V"],
-    "hrcRange": "59–61",
-    "hrcOptimal": "61",
-    "process": "Conventional melt",
-    "traits": ["🛡️ Good toughness", "💧 High corrosion resistance", "🪨 Easy to sharpen", "⚙️ Nitrogen alloyed fine carbides"],
-    "mfg": "Civivi, Sencut, Kansept, Vosteed",
-    "grit": "800–1000 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "18 DPS – decent edge retention with moderate chip resistance" },
-      { "bar": "bar-orange", "text": "20 DPS – best chipping resistance" }
-    ]
-  },
-  {
-    "name": "M390",
-    "finish": "Balanced",
-    "aliases": [],
-    "hrcRange": "60–62",
-    "hrcOptimal": "61",
-    "process": "PM (Böhler)",
-    "traits": ["🛡️ High wear resistance", "💧 Good corrosion resistance", "🪨 Harder to sharpen — diamond/CBN recommended", "⚙️ Carbide-heavy"],
-    "mfg": "Benchmade, Böker, ZT, WE, Kansept, Rike, Vosteed",
-    "grit": "600–1000 grit",
-    "dps": [
-      { "bar": "bar-green", "text": "20 DPS – very high edge retention with moderate chip resistance" },
-      { "bar": "bar-orange", "text": "22 DPS – added stability under hard use, slight edge retention trade-off" }
+      { "bar": "bar-orange", "text": "20 DPS – added stability for abrasive cutting" }
     ]
   }
 ]
-
