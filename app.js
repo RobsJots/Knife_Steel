@@ -1,3 +1,5 @@
+// Knife Steel Reference v3.4.1
+
 // State
 const state = { steels: [], index: [] };
 
@@ -7,12 +9,11 @@ const norm = (s) => s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g
 // Parse HRC optimal to a numeric value (handles "62+", "61–62 / 61", etc.)
 function parseHrcOptimal(s) {
   if (!s) return Number.NEGATIVE_INFINITY;
-  // Extract first number in the string
   const m = String(s).match(/(\d+(\.\d+)?)/);
   return m ? parseFloat(m[1]) : Number.NEGATIVE_INFINITY;
 }
 
-// Build index for search
+// Build index for search (name + aliases)
 function buildIndex(steels) {
   state.index = steels.map((s) => ({
     key: norm(`${s.name} ${s.aliases?.join(" ") || ""}`),
@@ -46,7 +47,10 @@ function fuzzyFind(query, limit = 50) {
 function renderSuggestions(list) {
   const ul = document.getElementById("suggestions");
   ul.innerHTML = "";
-  if (list.length === 0) { ul.classList.remove("show"); return; }
+  if (list.length === 0) {
+    ul.classList.remove("show");
+    return;
+  }
   list.forEach((steel) => {
     const li = document.createElement("li");
     li.textContent = steel.name;
@@ -64,33 +68,51 @@ function renderSuggestions(list) {
 
 function scrollToCards() {
   const el = document.getElementById("cards");
-  if (el && typeof el.scrollIntoView === "function") el.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (el && typeof el.scrollIntoView === "function") {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
-// Card node
+// Card node with mobile-only collapsible details/summary
 function cardNode(s) {
   const div = document.createElement("div");
   div.className = "card";
-  div.innerHTML = `
-    <div class="card-head">
-      <div class="name">${s.name}</div>
-      <div class="hrc">${s.hrcRange} / ${s.hrcOptimal}</div>
-    </div>
-    <div class="process">Process: ${s.process}</div>
+
+  const details = document.createElement("details");
+  if (window.innerWidth >= 769) details.open = true; // desktop open
+
+  const summary = document.createElement("summary");
+  summary.innerHTML = `
+    <span class="name">${s.name}</span>
+    <span class="hrc">${s.hrcRange} / ${s.hrcOptimal}</span>
+  `;
+
+  const body = document.createElement("div");
+  body.className = "card-body";
+  body.innerHTML = `
+    <div class="process"><strong>Process:</strong> ${s.process}</div>
     <ul class="traits">
       ${s.traits.map((t) => `<li>${t}</li>`).join("")}
     </ul>
-    <div class="mfg">🏭 ${s.mfg}</div>
+    <div class="mfg"><strong>🏭 Manufacturers:</strong> ${s.mfg}</div>
     <span class="grit-pill">${s.grit}</span>
     <div class="dps">
-      ${s.dps.map((row) => `
+      ${s.dps
+        .map(
+          (row) => `
         <div class="dps-row">
           <div class="${row.bar}"></div>
           <div>${row.text}</div>
         </div>
-      `).join("")}
+      `
+        )
+        .join("")}
     </div>
   `;
+
+  details.appendChild(summary);
+  details.appendChild(body);
+  div.appendChild(details);
   return div;
 }
 
@@ -101,7 +123,7 @@ function renderGrouped(steels) {
 
   const finishes = [
     { key: "Polished", cls: "panel-polished", title: "Polished Finish" },
-    { key: "Toothy",   cls: "panel-toothy",   title: "Toothy Finish" },
+    { key: "Toothy", cls: "panel-toothy", title: "Toothy Finish" },
     { key: "Balanced", cls: "panel-balanced", title: "Balanced Finish" }
   ];
 
@@ -123,7 +145,7 @@ function renderGrouped(steels) {
   });
 }
 
-// Render search results in a consistent grid (no full-width card)
+// Render search results in a consistent grid
 function renderCards(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
@@ -135,18 +157,22 @@ function renderCards(steels) {
 
 // Init
 async function init() {
-  const resp = await fetch("steels.json");
+  const resp = await fetch("steels.json", { cache: "no-store" });
   state.steels = await resp.json();
   buildIndex(state.steels);
 
-  // Default: full grouped view (3 panels side by side, sorted ascending HRC)
+  // Default: grouped view (3 panels, ascending HRC)
   renderGrouped(state.steels);
 
   const input = document.getElementById("steelSearch");
 
   input.addEventListener("input", (e) => {
     const q = e.target.value;
-    if (!q) { renderSuggestions([]); renderGrouped(state.steels); return; }
+    if (!q) {
+      renderSuggestions([]);
+      renderGrouped(state.steels);
+      return;
+    }
     renderSuggestions(fuzzyFind(q));
   });
 
@@ -168,6 +194,21 @@ async function init() {
     const s = document.getElementById("suggestions");
     const wrap = document.querySelector(".search-wrap");
     if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
+  });
+
+  // Re-render when crossing mobile/desktop breakpoint to keep collapse state correct
+  let prevIsDesktop = window.innerWidth >= 769;
+  window.addEventListener("resize", () => {
+    const nowIsDesktop = window.innerWidth >= 769;
+    if (nowIsDesktop !== prevIsDesktop) {
+      prevIsDesktop = nowIsDesktop;
+      const query = document.getElementById("steelSearch").value.trim();
+      if (query) {
+        renderCards(fuzzyFind(query));
+      } else {
+        renderGrouped(state.steels);
+      }
+    }
   });
 }
 
