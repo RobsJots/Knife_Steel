@@ -209,7 +209,7 @@ html, body {
   gap: 10px;
 }
 .card-body .card-title {
-  display: none; /* hidden on mobile to avoid duplication */
+  display: none;
   align-items: baseline;
   justify-content: space-between;
   font-weight: 700;
@@ -218,12 +218,10 @@ html, body {
 .card-body .card-title .hrc  { font-variant: small-caps; font-size: 0.95rem; color: #333; font-weight: 600; }
 
 @media (min-width: 769px) {
-  /* Desktop: always expanded; summary hidden; title visible */
   .card summary { display: none; }
   .card-body .card-title { display: flex; }
 }
 
-/* Other fields */
 .card .process,
 .card .mfg {
   font-size: 0.95rem;
