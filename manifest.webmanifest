@@ -1,7 +1,7 @@
 {
   "name": "Knife Steel Reference",
   "short_name": "KSR",
-  "description": "Knife Steel Reference v3.4.1",
+  "description": "Knife Steel Reference v3.5",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
