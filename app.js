@@ -1,4 +1,4 @@
-// Knife Steel Reference v3.4.1
+// Knife Steel Reference v3.5
 
 // State
 const state = { steels: [], index: [] };
@@ -47,10 +47,7 @@ function fuzzyFind(query, limit = 50) {
 function renderSuggestions(list) {
   const ul = document.getElementById("suggestions");
   ul.innerHTML = "";
-  if (list.length === 0) {
-    ul.classList.remove("show");
-    return;
-  }
+  if (list.length === 0) { ul.classList.remove("show"); return; }
   list.forEach((steel) => {
     const li = document.createElement("li");
     li.textContent = steel.name;
@@ -73,7 +70,7 @@ function scrollToCards() {
   }
 }
 
-// Card node with mobile-only collapsible details/summary
+// Card node with mobile-only collapsible wrapper
 function cardNode(s) {
   const div = document.createElement("div");
   div.className = "card";
@@ -82,31 +79,30 @@ function cardNode(s) {
   if (window.innerWidth >= 769) details.open = true; // desktop open
 
   const summary = document.createElement("summary");
+  // Preserve your original card-head visual inside summary for mobile collapsed view
   summary.innerHTML = `
-    <span class="name">${s.name}</span>
-    <span class="hrc">${s.hrcRange} / ${s.hrcOptimal}</span>
+    <div class="card-head">
+      <div class="name">${s.name}</div>
+      <div class="hrc">${s.hrcRange} / ${s.hrcOptimal}</div>
+    </div>
   `;
 
   const body = document.createElement("div");
   body.className = "card-body";
   body.innerHTML = `
-    <div class="process"><strong>Process:</strong> ${s.process}</div>
+    <div class="process">Process: ${s.process}</div>
     <ul class="traits">
       ${s.traits.map((t) => `<li>${t}</li>`).join("")}
     </ul>
-    <div class="mfg"><strong>🏭 Manufacturers:</strong> ${s.mfg}</div>
+    <div class="mfg">🏭 ${s.mfg}</div>
     <span class="grit-pill">${s.grit}</span>
     <div class="dps">
-      ${s.dps
-        .map(
-          (row) => `
+      ${s.dps.map((row) => `
         <div class="dps-row">
           <div class="${row.bar}"></div>
           <div>${row.text}</div>
         </div>
-      `
-        )
-        .join("")}
+      `).join("")}
     </div>
   `;
 
@@ -116,21 +112,25 @@ function cardNode(s) {
   return div;
 }
 
-// Render grouped panels with ascending HRC
+// Render grouped panels with ascending HRC (three side-by-side panels on desktop)
 function renderGrouped(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
 
   const finishes = [
     { key: "Polished", cls: "panel-polished", title: "Polished Finish" },
-    { key: "Toothy", cls: "panel-toothy", title: "Toothy Finish" },
+    { key: "Toothy",   cls: "panel-toothy",   title: "Toothy Finish" },
     { key: "Balanced", cls: "panel-balanced", title: "Balanced Finish" }
   ];
 
   finishes.forEach(({ key, cls, title }) => {
     const section = document.createElement("section");
     section.className = `panel ${cls}`;
-    section.innerHTML = `<h2 class="panel-header">${title}</h2>`;
+
+    const header = document.createElement("h2");
+    header.className = "panel-header";
+    header.textContent = title;
+    section.appendChild(header);
 
     const grid = document.createElement("div");
     grid.className = "card-grid";
@@ -145,7 +145,7 @@ function renderGrouped(steels) {
   });
 }
 
-// Render search results in a consistent grid
+// Render search results in a consistent grid (no panels, keeps card visuals)
 function renderCards(steels) {
   const root = document.getElementById("cards");
   root.innerHTML = "";
@@ -168,11 +168,7 @@ async function init() {
 
   input.addEventListener("input", (e) => {
     const q = e.target.value;
-    if (!q) {
-      renderSuggestions([]);
-      renderGrouped(state.steels);
-      return;
-    }
+    if (!q) { renderSuggestions([]); renderGrouped(state.steels); return; }
     renderSuggestions(fuzzyFind(q));
   });
 
