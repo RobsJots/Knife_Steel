@@ -103,7 +103,7 @@ function cardNode(s, forceOpen = false) {
           <div class="${row.bar}"></div>
           <div>${row.text}</div>
         </div>
-      ).join("")}
+      `).join("")}
     </div>
   `;
 
