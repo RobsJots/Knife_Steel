@@ -1,5 +1,5 @@
-// Knife Steel Reference v3.5.1 — app-shell cache for offline usage
-const CACHE = "ksr-cache-v3.5.1";
+// Knife Steel Reference v3.6.0 — app-shell cache for offline usage
+const CACHE = "ksr-cache-v3.6.0";
 const ASSETS = [
   "./",
   "./index.html",
@@ -40,4 +40,3 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
-
