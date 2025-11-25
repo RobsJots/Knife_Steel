@@ -168,6 +168,19 @@
     }).join("");
   }
 
+  function isInCompare(steel) {
+    return state.compare.some(function (s) { return s.name === steel.name; });
+  }
+
+  function syncCompareCheckboxes() {
+    var boxes = document.querySelectorAll(".compare-checkbox");
+    boxes.forEach(function (box) {
+      var name = box.getAttribute("data-steel-name");
+      if (!name) return;
+      box.checked = state.compare.some(function (s) { return s.name === name; });
+    });
+  }
+
   function cardNode(s) {
     var div = document.createElement("div");
     div.className = "card";
@@ -177,8 +190,15 @@
     details.open = isDesktop;
 
     var summary = document.createElement("summary");
-    summary.innerHTML = '<div class="card-head"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
-      '<div class="summary-toggle"><span class="chev">▼</span> Tap to ' + (details.open ? "collapse" : "expand") + "</div>";
+
+    // Add a small compare checkbox inside the summary. Stop propagation so clicking the checkbox doesn't toggle the details.
+    var checkboxHtml = '<label style="display:inline-flex;align-items:center;margin-right:8px;">' +
+      '<input type="checkbox" class="compare-checkbox" data-steel-name="' + safeText(s.name) + '" aria-label="Select ' + safeText(s.name) + ' for compare">' +
+      '</label>';
+
+    summary.innerHTML = checkboxHtml +
+      '<div class="card-head" style="display:inline-flex;align-items:baseline;justify-content:space-between;width:calc(100% - 40px)"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
+      '<div class="summary-toggle" style="display:block;width:100%"><span class="chev">▼</span> Tap to ' + (details.open ? "collapse" : "expand") + "</div>";
 
     var rec = getRecommendation(s, state.activeGlobalGrind || "");
     var traitsHtml = Array.isArray(s.traits) ? s.traits.map(function (t) { return "<li>" + safeText(t) + "</li>"; }).join("") : "";
@@ -207,38 +227,14 @@
       '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
       '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
       '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
-      '<div class="dps">' + dpsHtml + "</div>" +
+      '<div class="dps">' + dpsHtml + "</div>' +
       grindSelectHtml +
       '<div style="margin-top:8px;display:flex;gap:8px;justify-content:space-between;align-items:center">' +
       '<button class="btn compare-btn">Compare</button>' +
       '<button class="btn copy-recipe-btn">Copy Recipe</button>' +
       "</div>";
 
-    // Per-card grind selection
-    body.querySelector(".card-grind-select").addEventListener("change", function (e) {
-      var chosen = e.target.value;
-      var newRec = getRecommendation(s, chosen);
-      var recStyle = body.querySelector(".rec-style");
-      var recGrit = body.querySelector(".rec-grit");
-      var recMicro = body.querySelector(".rec-micro");
-      var recNotes = body.querySelector(".rec-notes");
-      if (recStyle) recStyle.textContent = safeText(newRec.dpsStyle);
-      if (recGrit) recGrit.textContent = safeText(newRec.gritRange);
-      if (recMicro) recMicro.textContent = safeText(newRec.microbevel && newRec.microbevel.angle) + " @ " + safeText(newRec.microbevel && newRec.microbevel.grit);
-      if (recNotes) recNotes.textContent = safeText(newRec.notes);
-    });
-
-    // Compare button
-    body.querySelector(".compare-btn").addEventListener("click", function () { toggleCompare(s); });
-
-    // Copy recipe button
-    body.querySelector(".copy-recipe-btn").addEventListener("click", function () {
-      var chosen = body.querySelector(".card-grind-select").value;
-      var recObj = getRecommendation(s, chosen);
-      var recipe = buildRecipeText(s, chosen, recObj);
-      copyToClipboard(recipe);
-    });
-
+    // Attach checkbox behavior after body is in DOM (we'll attach listeners below)
     details.addEventListener("toggle", function () {
       var txt = details.open ? "collapse" : "expand";
       var toggle = summary.querySelector(".summary-toggle");
@@ -248,6 +244,65 @@
     details.appendChild(summary);
     details.appendChild(body);
     div.appendChild(details);
+
+    // Wire up per-card checkbox (prevent summary toggle when clicking checkbox)
+    // The checkbox is inside summary; find it and attach handlers.
+    var checkbox = summary.querySelector(".compare-checkbox");
+    if (checkbox) {
+      // Initialize checked state based on current compare list
+      checkbox.checked = isInCompare(s);
+
+      checkbox.addEventListener("click", function (ev) {
+        // Prevent the click from toggling the <details>
+        ev.stopPropagation();
+      });
+
+      checkbox.addEventListener("change", function () {
+        // Toggle compare state to match checkbox
+        var currently = isInCompare(s);
+        if (checkbox.checked && !currently) {
+          // add
+          toggleCompare(s);
+        } else if (!checkbox.checked && currently) {
+          // remove
+          toggleCompare(s);
+        } else {
+          // ensure sync
+          syncCompareCheckboxes();
+        }
+      });
+    }
+
+    // Per-card grind selection
+    var cardSelect = body.querySelector(".card-grind-select");
+    if (cardSelect) {
+      cardSelect.addEventListener("change", function (e) {
+        var chosen = e.target.value;
+        var newRec = getRecommendation(s, chosen);
+        var recStyle = body.querySelector(".rec-style");
+        var recGrit = body.querySelector(".rec-grit");
+        var recMicro = body.querySelector(".rec-micro");
+        var recNotes = body.querySelector(".rec-notes");
+        if (recStyle) recStyle.textContent = safeText(newRec.dpsStyle);
+        if (recGrit) recGrit.textContent = safeText(newRec.gritRange);
+        if (recMicro) recMicro.textContent = safeText(newRec.microbevel && newRec.microbevel.angle) + " @ " + safeText(newRec.microbevel && newRec.microbevel.grit);
+        if (recNotes) recNotes.textContent = safeText(newRec.notes);
+      });
+    }
+
+    // Compare button
+    var compareBtn = body.querySelector(".compare-btn");
+    if (compareBtn) compareBtn.addEventListener("click", function () { toggleCompare(s); });
+
+    // Copy recipe button
+    var copyBtn = body.querySelector(".copy-recipe-btn");
+    if (copyBtn) copyBtn.addEventListener("click", function () {
+      var chosen = body.querySelector(".card-grind-select").value;
+      var recObj = getRecommendation(s, chosen);
+      var recipe = buildRecipeText(s, chosen, recObj);
+      copyToClipboard(recipe);
+    });
+
     return div;
   }
 
@@ -261,6 +316,8 @@
       state.compare.splice(idx, 1);
     }
     renderCompareTray();
+    // Keep checkboxes in sync after compare state changes
+    syncCompareCheckboxes();
   }
 
   function renderCompareTray() {
@@ -278,9 +335,11 @@
       item.querySelector(".remove-compare").addEventListener("click", function () { toggleCompare(s); });
       list.appendChild(item);
     });
+    // Ensure checkboxes reflect the current compare list
+    syncCompareCheckboxes();
   }
 
-  function clearCompare() { state.compare = []; renderCompareTray(); }
+  function clearCompare() { state.compare = []; renderCompareTray(); syncCompareCheckboxes(); }
 
   function copyCompareRecipes() {
     if (state.compare.length === 0) return;
@@ -388,6 +447,9 @@
       section.appendChild(grid);
       root.appendChild(section);
     });
+
+    // Ensure checkboxes reflect compare state after full render
+    syncCompareCheckboxes();
   }
 
   // --- Suggestions dropdown ---
@@ -426,6 +488,8 @@
     grid.className = "card-grid";
     (steels || []).forEach(function (s) { grid.appendChild(cardNode(s)); });
     root.appendChild(grid);
+    // Sync checkboxes after rendering a focused set
+    syncCompareCheckboxes();
   }
 
   // --- Expand/collapse helpers ---
