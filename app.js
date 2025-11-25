@@ -218,7 +218,7 @@
       '<ul class="traits">' + traitsHtml + "</ul>" +
       '<div class="mfg">🏭 ' + safeText(s.mfg) + "</div>" +
       '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
-      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>' .replace(/'/g, '') +
+      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>" +
       '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
       '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
       '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
