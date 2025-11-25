@@ -65,7 +65,7 @@
       saber: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "1°", grit: "800" }, notes: "Durable wedge needs bite." },
       scandi: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Scandi benefits from bite." },
       chisel: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Single-side geometry amplifies bite." },
-      compound: { dpsStyle: "toothy", gritRange: "400–1000", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Match working bevel." },
+      compound: { dpsStyle: "toothy", gritRange: "400–1000", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Match the working bevel." },
       tanto: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800" }, notes: "Tip strength and bite are critical." },
       microbevel: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1.5°", grit: "800–1000" }, notes: "Polish microbevel conservatively." }
     },
@@ -203,7 +203,7 @@
       '<ul class="traits">' + traitsHtml + "</ul>" +
       '<div class="mfg">🏭 ' + safeText(s.mfg) + "</div>" +
       '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
-      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>' +
+      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>" +
       '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
       '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
       '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
