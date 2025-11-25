@@ -1,8 +1,4 @@
-// Knife Steel Reference v4.0.0 — production-ready
-// Robust, data-driven, supports grindRecommendations, global grind filter (#grindSelect),
-// per-card grind selector, compare tray, pull-to-refresh hook.
-// Defensive rendering so cards never disappear; clear error/empty states.
-
+// Knife Steel Reference v4.0.0 — production-ready (refresh button replaces pull-to-refresh)
 (function () {
   "use strict";
 
@@ -34,7 +30,7 @@
     return body && body.getAttribute("data-app-version") ? body.getAttribute("data-app-version") : "4.0.0";
   }
 
-  // --- Defaults maps (used when grindRecommendations missing) ---
+  // --- Defaults (unchanged) ---
   var defaultBySteelClass = {
     vanadiumHeavy: {
       fullFlat: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Favor toothiness to preserve bite around hard vanadium carbides." },
@@ -191,7 +187,6 @@
 
     var summary = document.createElement("summary");
 
-    // Add a small compare checkbox inside the summary. Stop propagation so clicking the checkbox doesn't toggle the details.
     var checkboxHtml = '<label style="display:inline-flex;align-items:center;margin-right:8px;">' +
       '<input type="checkbox" class="compare-checkbox" data-steel-name="' + safeText(s.name) + '" aria-label="Select ' + safeText(s.name) + ' for compare">' +
       '</label>';
@@ -223,7 +218,7 @@
       '<ul class="traits">' + traitsHtml + "</ul>" +
       '<div class="mfg">🏭 ' + safeText(s.mfg) + "</div>" +
       '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
-      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>" +
+      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>' +
       '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
       '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
       '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
@@ -234,7 +229,6 @@
       '<button class="btn copy-recipe-btn">Copy Recipe</button>' +
       "</div>";
 
-    // Attach checkbox behavior after body is in DOM (we'll attach listeners below)
     details.addEventListener("toggle", function () {
       var txt = details.open ? "collapse" : "expand";
       var toggle = summary.querySelector(".summary-toggle");
@@ -245,35 +239,18 @@
     details.appendChild(body);
     div.appendChild(details);
 
-    // Wire up per-card checkbox (prevent summary toggle when clicking checkbox)
-    // The checkbox is inside summary; find it and attach handlers.
     var checkbox = summary.querySelector(".compare-checkbox");
     if (checkbox) {
-      // Initialize checked state based on current compare list
       checkbox.checked = isInCompare(s);
-
-      checkbox.addEventListener("click", function (ev) {
-        // Prevent the click from toggling the <details>
-        ev.stopPropagation();
-      });
-
+      checkbox.addEventListener("click", function (ev) { ev.stopPropagation(); });
       checkbox.addEventListener("change", function () {
-        // Toggle compare state to match checkbox
         var currently = isInCompare(s);
-        if (checkbox.checked && !currently) {
-          // add
-          toggleCompare(s);
-        } else if (!checkbox.checked && currently) {
-          // remove
-          toggleCompare(s);
-        } else {
-          // ensure sync
-          syncCompareCheckboxes();
-        }
+        if (checkbox.checked && !currently) toggleCompare(s);
+        else if (!checkbox.checked && currently) toggleCompare(s);
+        else syncCompareCheckboxes();
       });
     }
 
-    // Per-card grind selection
     var cardSelect = body.querySelector(".card-grind-select");
     if (cardSelect) {
       cardSelect.addEventListener("change", function (e) {
@@ -290,11 +267,9 @@
       });
     }
 
-    // Compare button
     var compareBtn = body.querySelector(".compare-btn");
     if (compareBtn) compareBtn.addEventListener("click", function () { toggleCompare(s); });
 
-    // Copy recipe button
     var copyBtn = body.querySelector(".copy-recipe-btn");
     if (copyBtn) copyBtn.addEventListener("click", function () {
       var chosen = body.querySelector(".card-grind-select").value;
@@ -316,7 +291,6 @@
       state.compare.splice(idx, 1);
     }
     renderCompareTray();
-    // Keep checkboxes in sync after compare state changes
     syncCompareCheckboxes();
   }
 
@@ -335,7 +309,6 @@
       item.querySelector(".remove-compare").addEventListener("click", function () { toggleCompare(s); });
       list.appendChild(item);
     });
-    // Ensure checkboxes reflect the current compare list
     syncCompareCheckboxes();
   }
 
@@ -400,11 +373,10 @@
     if (!root) return;
     root.innerHTML = "";
 
-    // Visible empty/error state
     if (!Array.isArray(steels) || steels.length === 0) {
       var empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.innerHTML = "<p>No steels loaded. Pull to refresh or try again later.</p>";
+      empty.innerHTML = "<p>No steels loaded. Use Refresh to try again.</p>";
       root.appendChild(empty);
       console.warn("renderGrouped: no steels to render");
       return;
@@ -448,7 +420,6 @@
       root.appendChild(section);
     });
 
-    // Ensure checkboxes reflect compare state after full render
     syncCompareCheckboxes();
   }
 
@@ -488,7 +459,6 @@
     grid.className = "card-grid";
     (steels || []).forEach(function (s) { grid.appendChild(cardNode(s)); });
     root.appendChild(grid);
-    // Sync checkboxes after rendering a focused set
     syncCompareCheckboxes();
   }
 
@@ -497,9 +467,9 @@
   function collapseAllCards() { if (window.innerWidth < 769) document.querySelectorAll(".card details").forEach(function (d) { d.open = false; }); }
 
   // --- Robust fetch with cache-bust & fallback ---
-  async function loadSteels() {
+  async function loadSteels(bustVersion) {
     var base = "steels.json";
-    var bust = base + "?v=" + encodeURIComponent(state.appVersion);
+    var bust = base + "?v=" + encodeURIComponent(bustVersion || state.appVersion || Date.now());
     try {
       var r = await fetch(bust, { cache: "no-store" });
       if (!r.ok) throw new Error("Failed to fetch " + bust + ": " + r.status + " " + r.statusText);
@@ -525,55 +495,61 @@
     }
   }
 
-  // --- Pull-to-refresh (requires #ptr element in DOM) ---
-  function enablePullToRefresh() {
-    var root = el("cards");
-    var ptr = el("ptr");
-    if (!root || !ptr) return;
+  // --- Force reload helper (used by Refresh button) ---
+  async function forceReloadAll() {
+    var btn = el("refreshBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "Refreshing..."; }
 
-    var startY = 0, currentY = 0, pulling = false;
-    var threshold = 70;
-
-    root.addEventListener("touchstart", function (e) {
-      if (root.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; } else { pulling = false; }
-    }, { passive: true });
-
-    root.addEventListener("touchmove", function (e) {
-      if (!pulling) return;
-      currentY = e.touches[0].clientY;
-      var delta = currentY - startY;
-      if (delta > 0) {
-        e.preventDefault();
-        ptr.classList.add("active");
-        ptr.style.transform = "translateY(" + Math.min(delta - ptr.offsetHeight, threshold) + "px)";
-        ptr.querySelector(".ptr-arrow").textContent = (delta > threshold) ? "↻" : "⬇";
-      }
-    }, { passive: false });
-
-    root.addEventListener("touchend", function () {
-      if (!pulling) return;
-      var delta = currentY - startY;
-      ptr.style.transform = "";
-      ptr.classList.remove("active");
-      pulling = false;
-      if (delta > threshold) { doRefresh(ptr); }
-    }, { passive: true });
-  }
-
-  async function doRefresh(ptr) {
     try {
-      ptr.classList.add("active");
-      var arrow = ptr.querySelector(".ptr-arrow");
-      if (arrow) arrow.textContent = "⟳";
-      var data = await loadSteels();
-      state.steels = data;
-      buildIndex(state.steels);
-      renderGrouped(state.steels);
+      // Unregister service worker if present
+      if ('serviceWorker' in navigator) {
+        try {
+          var reg = await navigator.serviceWorker.getRegistration();
+          if (reg) {
+            await reg.unregister();
+            console.log("Service worker unregistered for refresh.");
+          }
+        } catch (swErr) {
+          console.warn("Service worker unregister failed:", swErr);
+        }
+      }
+
+      // Clear all caches
+      if (window.caches && caches.keys) {
+        try {
+          var keys = await caches.keys();
+          await Promise.all(keys.map(function (k) { return caches.delete(k); }));
+          console.log("All caches cleared.");
+        } catch (cacheErr) {
+          console.warn("Cache clear failed:", cacheErr);
+        }
+      }
+
+      // Fetch fresh steels.json and re-render (warm UI)
+      try {
+        var fresh = await loadSteels(Date.now());
+        state.steels = fresh;
+        buildIndex(state.steels);
+        renderGrouped(state.steels);
+        console.log("UI updated with fresh steels.json.");
+      } catch (fetchErr) {
+        console.warn("Fetching fresh steels.json failed:", fetchErr);
+      }
+
+      // Finally reload the page so the browser fetches latest HTML/JS
+      setTimeout(function () {
+        try { location.reload(); } catch (e) { console.warn("Reload failed:", e); }
+      }, 250);
+
     } catch (e) {
       showErrorBanner("Refresh failed: " + e.message);
-    } finally {
-      setTimeout(function () { ptr.classList.remove("active"); }, 600);
+      if (btn) { btn.disabled = false; btn.textContent = "Refresh"; }
     }
+  }
+
+  // --- Pull-to-refresh function left unused (kept for reference) ---
+  function enablePullToRefresh() {
+    // intentionally not wired by default; replaced by Refresh button
   }
 
   // --- Init & wiring ---
@@ -582,9 +558,10 @@
     var clearBtn = el("clearSearch");
     var expandBtn = el("expandAll");
     var collapseBtn = el("collapseAll");
-    var grindFilter = el("grindSelect"); // correct element in header
+    var grindFilter = el("grindSelect");
     var clearCompareBtn = el("clearCompare");
     var copyRecipeBtn = el("copyRecipe");
+    var refreshBtn = el("refreshBtn");
 
     if (clearBtn) clearBtn.style.display = "none";
 
@@ -602,6 +579,9 @@
     } catch (e) {
       showErrorBanner("Render error: " + e.message);
     }
+
+    // Wire refresh button
+    if (refreshBtn) refreshBtn.addEventListener("click", forceReloadAll);
 
     // Search
     function updateClearVisibility() { if (!input || !clearBtn) return; clearBtn.style.display = input.value.trim().length ? "inline-block" : "none"; }
@@ -668,8 +648,7 @@
       }
     });
 
-    // Pull-to-refresh wiring (requires #ptr element present)
-    enablePullToRefresh();
+    // Note: pull-to-refresh intentionally not enabled
   }
 
   // Start
