@@ -227,7 +227,7 @@
       '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
       '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
       '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
-      '<div class="dps">' + dpsHtml + "</div>' +
+      '<div class="dps">' + dpsHtml + "</div>" +
       grindSelectHtml +
       '<div style="margin-top:8px;display:flex;gap:8px;justify-content:space-between;align-items:center">' +
       '<button class="btn compare-btn">Compare</button>' +
