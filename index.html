@@ -67,9 +67,29 @@
 
   <script src="app.js" defer></script>
   <script>
+    // Register service worker and request immediate activation when available
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("sw.js").catch(() => {});
+      window.addEventListener("load", async () => {
+        try {
+          const reg = await navigator.serviceWorker.register("sw.js");
+          // If there's a waiting worker, tell it to skip waiting
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+          // Listen for updates and request skipWaiting when a new SW is installed
+          reg.addEventListener("updatefound", () => {
+            const newSW = reg.installing;
+            if (!newSW) return;
+            newSW.addEventListener("statechange", () => {
+              if (newSW.state === "installed" && navigator.serviceWorker.controller) {
+                // Ask the new worker to activate immediately
+                newSW.postMessage({ type: "SKIP_WAITING" });
+              }
+            });
+          });
+        } catch (e) {
+          // swallow registration errors in production; app still works without SW
+        }
       });
     }
   </script>
