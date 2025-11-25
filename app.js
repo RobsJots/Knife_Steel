@@ -1,11 +1,7 @@
 // Knife Steel Reference v4.0.0 — production-ready
-// Robust, data-driven, supports grindRecommendations, global grind filter, per-card grind selector, compare tray.
-// Fixes:
-// - Wires global grind to #grindSelect (not #grindFilter)
-// - Defensive fetch with cache-busting and fallback parse
-// - Mobile pull-to-refresh (works with service worker)
-// - Safe empty/error rendering so cards never disappear
-// - Preserves manufacturer icon in card body
+// Robust, data-driven, supports grindRecommendations, global grind filter (#grindSelect),
+// per-card grind selector, compare tray, pull-to-refresh hook.
+// Defensive rendering so cards never disappear; clear error/empty states.
 
 (function () {
   "use strict";
@@ -185,23 +181,15 @@
       '<div class="summary-toggle"><span class="chev">▼</span> Tap to ' + (details.open ? "collapse" : "expand") + "</div>";
 
     var rec = getRecommendation(s, state.activeGlobalGrind || "");
-
     var traitsHtml = Array.isArray(s.traits) ? s.traits.map(function (t) { return "<li>" + safeText(t) + "</li>"; }).join("") : "";
-
     var dpsHtml = createDpsHtml(s.dps || []);
 
     var grindOptions = ["fullFlat","hollow","convex","saber","scandi","chisel","compound","tanto","microbevel"];
     var grindSelectHtml = '<div class="grind-select"><label>Grind</label><select class="card-grind-select">';
     grindOptions.forEach(function (g) {
       var label = {
-        fullFlat: "Full flat",
-        hollow: "Hollow",
-        convex: "Convex",
-        saber: "Saber",
-        scandi: "Scandi",
-        chisel: "Chisel",
-        compound: "Compound",
-        tanto: "Tanto",
+        fullFlat: "Full flat", hollow: "Hollow", convex: "Convex", saber: "Saber",
+        scandi: "Scandi", chisel: "Chisel", compound: "Compound", tanto: "Tanto",
         microbevel: "Microbevel-focused"
       }[g] || g;
       grindSelectHtml += '<option value="' + g + '"' + (g === (state.activeGlobalGrind || "fullFlat") ? " selected" : "") + ">" + label + "</option>";
@@ -226,7 +214,7 @@
       '<button class="btn copy-recipe-btn">Copy Recipe</button>' +
       "</div>";
 
-    // Event wiring for dynamic per-card grind selection
+    // Per-card grind selection
     body.querySelector(".card-grind-select").addEventListener("change", function (e) {
       var chosen = e.target.value;
       var newRec = getRecommendation(s, chosen);
@@ -241,11 +229,9 @@
     });
 
     // Compare button
-    body.querySelector(".compare-btn").addEventListener("click", function () {
-      toggleCompare(s);
-    });
+    body.querySelector(".compare-btn").addEventListener("click", function () { toggleCompare(s); });
 
-    // Copy recipe button — builds canonical recipe from recommendation
+    // Copy recipe button
     body.querySelector(".copy-recipe-btn").addEventListener("click", function () {
       var chosen = body.querySelector(".card-grind-select").value;
       var recObj = getRecommendation(s, chosen);
@@ -265,14 +251,11 @@
     return div;
   }
 
-  // --- Compare tray functions ---
+  // --- Compare tray ---
   function toggleCompare(steel) {
     var idx = state.compare.findIndex(function (s) { return s.name === steel.name; });
     if (idx === -1) {
-      if (state.compare.length >= 3) {
-        alert("Compare tray supports up to 3 items.");
-        return;
-      }
+      if (state.compare.length >= 3) { alert("Compare tray supports up to 3 items."); return; }
       state.compare.push(steel);
     } else {
       state.compare.splice(idx, 1);
@@ -285,27 +268,19 @@
     var list = el("compareList");
     if (!tray || !list) return;
     list.innerHTML = "";
-    if (state.compare.length === 0) {
-      tray.hidden = true;
-      return;
-    }
+    if (state.compare.length === 0) { tray.hidden = true; return; }
     tray.hidden = false;
     state.compare.forEach(function (s) {
       var item = document.createElement("div");
       item.className = "compare-item";
       item.innerHTML = '<div><strong>' + safeText(s.name) + '</strong><div class="muted">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
         '<div><button class="btn remove-compare">Remove</button></div>';
-      item.querySelector(".remove-compare").addEventListener("click", function () {
-        toggleCompare(s);
-      });
+      item.querySelector(".remove-compare").addEventListener("click", function () { toggleCompare(s); });
       list.appendChild(item);
     });
   }
 
-  function clearCompare() {
-    state.compare = [];
-    renderCompareTray();
-  }
+  function clearCompare() { state.compare = []; renderCompareTray(); }
 
   function copyCompareRecipes() {
     if (state.compare.length === 0) return;
@@ -316,7 +291,7 @@
     copyToClipboard(text);
   }
 
-  // --- Recipe builder and clipboard ---
+  // --- Recipe & clipboard ---
   function buildRecipeText(steel, grind, rec) {
     var lines = [];
     lines.push("Steel: " + safeText(steel.name) + " (" + safeText(steel.hrcRange) + " / " + safeText(steel.hrcOptimal) + ")");
@@ -327,8 +302,7 @@
     if (rec.notes) lines.push("Notes: " + safeText(rec.notes));
     lines.push("");
     lines.push("Suggested progression:");
-    var progression = suggestProgression(rec.gritRange);
-    progression.forEach(function (p) { lines.push("- " + p); });
+    suggestProgression(rec.gritRange).forEach(function (p) { lines.push("- " + p); });
     lines.push("");
     lines.push("Strop: light leather with compound; 10-30 passes depending on steel and grit.");
     return lines.join("\n");
@@ -350,9 +324,7 @@
 
   function copyToClipboard(text) {
     try {
-      navigator.clipboard.writeText(text).then(function () {
-        alert("Recipe copied to clipboard.");
-      }).catch(function () {
+      navigator.clipboard.writeText(text).then(function () { alert("Recipe copied to clipboard."); }).catch(function () {
         var ta = document.createElement("textarea");
         ta.value = text;
         document.body.appendChild(ta);
@@ -360,9 +332,7 @@
         try { document.execCommand("copy"); alert("Recipe copied to clipboard."); } catch (e) { alert("Copy failed."); }
         document.body.removeChild(ta);
       });
-    } catch (e) {
-      alert("Copy not supported.");
-    }
+    } catch (e) { alert("Copy not supported."); }
   }
 
   // --- Grouped panels rendering ---
@@ -371,12 +341,13 @@
     if (!root) return;
     root.innerHTML = "";
 
-    // Empty state if no data
+    // Visible empty/error state
     if (!Array.isArray(steels) || steels.length === 0) {
       var empty = document.createElement("div");
       empty.className = "empty-state";
-      empty.innerHTML = "<p>No steels available right now. Pull to refresh or try again later.</p>";
+      empty.innerHTML = "<p>No steels loaded. Pull to refresh or try again later.</p>";
       root.appendChild(empty);
+      console.warn("renderGrouped: no steels to render");
       return;
     }
 
@@ -471,15 +442,17 @@
       var text = await r.text();
       var parsed = JSON.parse(text);
       if (!Array.isArray(parsed)) throw new Error("steels.json root is not an array");
+      console.log("Loaded steels (primary):", parsed.length);
       return parsed;
     } catch (e) {
       console.warn("Primary fetch failed, trying fallback:", e.message);
       try {
-        var r2 = await fetch(base);
+        var r2 = await fetch(base, { cache: "reload" });
         if (!r2.ok) throw new Error("Fallback fetch failed: " + r2.status + " " + r2.statusText);
         var text2 = await r2.text();
         var parsed2 = JSON.parse(text2);
         if (!Array.isArray(parsed2)) throw new Error("steels.json root is not an array (fallback)");
+        console.log("Loaded steels (fallback):", parsed2.length);
         return parsed2;
       } catch (e2) {
         showErrorBanner("Could not load steels.json: " + e2.message);
@@ -488,24 +461,17 @@
     }
   }
 
-  // --- Pull-to-refresh (mobile-friendly) ---
+  // --- Pull-to-refresh (requires #ptr element in DOM) ---
   function enablePullToRefresh() {
     var root = el("cards");
     var ptr = el("ptr");
     if (!root || !ptr) return;
 
-    var startY = 0;
-    var currentY = 0;
-    var pulling = false;
+    var startY = 0, currentY = 0, pulling = false;
     var threshold = 70;
 
     root.addEventListener("touchstart", function (e) {
-      if (root.scrollTop === 0) {
-        startY = e.touches[0].clientY;
-        pulling = true;
-      } else {
-        pulling = false;
-      }
+      if (root.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; } else { pulling = false; }
     }, { passive: true });
 
     root.addEventListener("touchmove", function (e) {
@@ -526,9 +492,7 @@
       ptr.style.transform = "";
       ptr.classList.remove("active");
       pulling = false;
-      if (delta > threshold) {
-        doRefresh(ptr);
-      }
+      if (delta > threshold) { doRefresh(ptr); }
     }, { passive: true });
   }
 
@@ -544,9 +508,7 @@
     } catch (e) {
       showErrorBanner("Refresh failed: " + e.message);
     } finally {
-      setTimeout(function () {
-        ptr.classList.remove("active");
-      }, 600);
+      setTimeout(function () { ptr.classList.remove("active"); }, 600);
     }
   }
 
@@ -556,8 +518,7 @@
     var clearBtn = el("clearSearch");
     var expandBtn = el("expandAll");
     var collapseBtn = el("collapseAll");
-    // FIX: wire global grind to #grindSelect (present in header)
-    var grindFilter = el("grindSelect");
+    var grindFilter = el("grindSelect"); // correct element in header
     var clearCompareBtn = el("clearCompare");
     var copyRecipeBtn = el("copyRecipe");
 
@@ -578,8 +539,8 @@
       showErrorBanner("Render error: " + e.message);
     }
 
+    // Search
     function updateClearVisibility() { if (!input || !clearBtn) return; clearBtn.style.display = input.value.trim().length ? "inline-block" : "none"; }
-
     if (input) {
       input.addEventListener("input", function (e) {
         updateClearVisibility();
@@ -598,7 +559,6 @@
         }
       });
     }
-
     if (clearBtn) clearBtn.addEventListener("click", function () {
       if (input) input.value = "";
       updateClearVisibility();
@@ -607,11 +567,12 @@
       scrollToCards();
     });
 
+    // Expand/collapse
     if (expandBtn) expandBtn.addEventListener("click", expandAllCards);
     if (collapseBtn) collapseBtn.addEventListener("click", collapseAllCards);
 
+    // Global grind filter
     if (grindFilter) {
-      // initialize with current selection
       state.activeGlobalGrind = grindFilter.value && grindFilter.value !== "all" ? grindFilter.value : "";
       grindFilter.addEventListener("change", function (e) {
         var v = e.target.value || "";
@@ -620,15 +581,18 @@
       });
     }
 
+    // Compare tray actions
     if (clearCompareBtn) clearCompareBtn.addEventListener("click", clearCompare);
     if (copyRecipeBtn) copyRecipeBtn.addEventListener("click", copyCompareRecipes);
 
+    // Close suggestions when clicking outside
     document.addEventListener("click", function (e) {
       var s = el("suggestions");
       var wrap = document.querySelector(".search-wrap");
       if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
     });
 
+    // Responsive re-render
     var prevIsDesktop = window.innerWidth >= 769;
     window.addEventListener("resize", function () {
       var nowIsDesktop = window.innerWidth >= 769;
@@ -640,7 +604,7 @@
       }
     });
 
-    // Pull-to-refresh wiring (requires #ptr element present in DOM)
+    // Pull-to-refresh wiring (requires #ptr element present)
     enablePullToRefresh();
   }
 
