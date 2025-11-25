@@ -1,4 +1,4 @@
-// Knife Steel Reference v4.0.0 — production-ready (refresh button replaces pull-to-refresh)
+// Knife Steel Reference v4.0.0 — production-ready (pull-to-refresh removed)
 (function () {
   "use strict";
 
@@ -30,7 +30,7 @@
     return body && body.getAttribute("data-app-version") ? body.getAttribute("data-app-version") : "4.0.0";
   }
 
-  // --- Defaults (unchanged) ---
+  // --- Defaults maps (unchanged) ---
   var defaultBySteelClass = {
     vanadiumHeavy: {
       fullFlat: { dpsStyle: "toothy", gritRange: "400–800", microbevel: { angle: "0.5°–1°", grit: "800–1000" }, notes: "Favor toothiness to preserve bite around hard vanadium carbides." },
@@ -218,7 +218,7 @@
       '<ul class="traits">' + traitsHtml + "</ul>" +
       '<div class="mfg">🏭 ' + safeText(s.mfg) + "</div>" +
       '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
-      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>' +
+      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>' .replace(/'/g, '') +
       '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
       '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
       '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
@@ -547,11 +547,6 @@
     }
   }
 
-  // --- Pull-to-refresh function left unused (kept for reference) ---
-  function enablePullToRefresh() {
-    // intentionally not wired by default; replaced by Refresh button
-  }
-
   // --- Init & wiring ---
   async function init() {
     var input = el("steelSearch");
@@ -647,8 +642,6 @@
         else renderGrouped(state.steels);
       }
     });
-
-    // Note: pull-to-refresh intentionally not enabled
   }
 
   // Start
