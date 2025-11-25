@@ -46,6 +46,20 @@
 
   <main id="cards" class="cards-root" aria-live="polite"></main>
 
+  <!-- Compare tray (populated by app.js) -->
+  <aside id="compareTray" class="compare-tray" hidden aria-hidden="true" aria-label="Compare tray">
+    <div class="compare-header">
+      <strong>Compare</strong>
+      <div>
+        <button id="clearCompare" class="btn" type="button">Clear</button>
+      </div>
+    </div>
+    <div id="compareList" class="compare-list" role="list" aria-label="Selected steels for comparison"></div>
+    <div class="compare-actions">
+      <button id="copyRecipe" class="btn" type="button">Copy Recipes</button>
+    </div>
+  </aside>
+
   <footer class="app-footer">
     © 2025 Knife Steel & Sharpening Reference — <strong class="visible-version">v4.0.0</strong><br />
     Icons: 🛡️ Toughness · 💧 Corrosion · 🪨 Sharpening ease/difficulty · ⚙️ Carbide content · 🏭 Manufacturers who regularly hit optimal HRC
