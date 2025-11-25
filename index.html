@@ -38,11 +38,16 @@
         <button id="expandAll" class="btn" type="button">Expand all</button>
         <button id="collapseAll" class="btn" type="button">Collapse all</button>
       </div>
+
+      <!-- Refresh button replaces pull-to-refresh -->
+      <div class="refresh-control" style="margin-left:12px;">
+        <button id="refreshBtn" class="btn" type="button" aria-label="Refresh data">Refresh</button>
+      </div>
     </div>
   </header>
 
-  <!-- Pull-to-refresh indicator (hidden by default) -->
-  <div id="ptr" class="ptr" aria-hidden="true"><span class="ptr-arrow">⬇</span> Pull to refresh</div>
+  <!-- Pull-to-refresh indicator (kept for compatibility but not used) -->
+  <div id="ptr" class="ptr" aria-hidden="true" style="display:none;"><span class="ptr-arrow">⬇</span> Pull to refresh</div>
 
   <main id="cards" class="cards-root" aria-live="polite"></main>
 
@@ -72,23 +77,20 @@
       window.addEventListener("load", async () => {
         try {
           const reg = await navigator.serviceWorker.register("sw.js");
-          // If there's a waiting worker, tell it to skip waiting
           if (reg.waiting) {
             reg.waiting.postMessage({ type: "SKIP_WAITING" });
           }
-          // Listen for updates and request skipWaiting when a new SW is installed
           reg.addEventListener("updatefound", () => {
             const newSW = reg.installing;
             if (!newSW) return;
             newSW.addEventListener("statechange", () => {
               if (newSW.state === "installed" && navigator.serviceWorker.controller) {
-                // Ask the new worker to activate immediately
                 newSW.postMessage({ type: "SKIP_WAITING" });
               }
             });
           });
         } catch (e) {
-          // swallow registration errors in production; app still works without SW
+          // registration failed; app still works without SW
         }
       });
     }
