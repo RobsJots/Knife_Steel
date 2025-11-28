@@ -796,16 +796,10 @@ async function init() {
   });
 }
 
-  // -------------------------------
+ // -------------------------------
   // 13. Init trigger
   // -------------------------------
   // Start the app once DOM is ready
   window.addEventListener("DOMContentLoaded", init);
 
 })(); // close the IIFE
-  
-
-// Start
-  try { document.addEventListener("DOMContentLoaded", init); } catch (e) { showErrorBanner("Initialization error: " + e.message); }
-
-})();
