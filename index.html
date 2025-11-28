@@ -65,27 +65,6 @@
   </div>
   
   <script src="app.js" defer></script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", async () => {
-        try {
-          const reg = await navigator.serviceWorker.register("sw.js");
-          if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
-          reg.addEventListener("updatefound", () => {
-            const newSW = reg.installing;
-            if (!newSW) return;
-            newSW.addEventListener("statechange", () => {
-              if (newSW.state === "installed" && navigator.serviceWorker.controller) {
-                newSW.postMessage({ type: "SKIP_WAITING" });
-              }
-            });
-          });
-        } catch (e) {
-          // registration failed; app still works without SW
-        }
-      });
-    }
-  </script>
 
   <footer class="app-footer">
     © 2025 Knife Steel & Sharpening Reference — <strong class="visible-version"></strong><br />
