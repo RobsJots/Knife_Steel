@@ -646,6 +646,13 @@ function cardNode(s) {
     var refreshBtn = el("refreshBtn");
     var closeGuideBtn = el("closeGuideBtn");
     var copyGuideBtn = el("copyGuideBtn");
+    // Inject version into DOM
+    document.body.setAttribute("data-app-version", APP_VERSION);
+    var vSpan = document.querySelector(".version");
+    if (vSpan) vSpan.textContent = APP_VERSION;
+    var vStrong = document.querySelector(".visible-version");
+    if (vStrong) vStrong.textContent = APP_VERSION;
+
 
     // Modal buttons (if modal HTML present)
     if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
