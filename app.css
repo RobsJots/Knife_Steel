@@ -251,10 +251,19 @@ html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,syst
   cursor: pointer;
 }
 
+/* Hide search + controls on desktop */
+@media (min-width: 769px) {
+  .search-wrap,
+  .controls {
+    display: none !important;
+  }
+}
+
 /* Small responsive tweaks */
 @media (min-width: 900px) {
   .cards-root { padding: 20px; min-height: calc(100vh - 220px); }
   .controls-row { gap: 16px; }
 }
+
 
 
