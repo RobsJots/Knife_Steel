@@ -19,23 +19,26 @@
 
   <main id="cards" class="cards-root" aria-live="polite"></main>
 
-  <aside id="compareTray" hidden aria-hidden="true">
+  <!-- Compare tray -->
+  <aside id="compareTray" class="compare-tray" hidden aria-hidden="true" aria-label="Compare tray">
     <div id="compareList"></div>
-      <button id="clearCompare" class="btn">Clear</button>
-      <button id="copyRecipe" class="btn">Sharpening Guide</button>
+    <div class="compare-actions">
+      <button id="clearCompare" class="btn" type="button">Clear</button>
+      <button id="copyRecipe" class="btn" type="button">Sharpening Guide</button>
+    </div>
   </aside>
 
-<!-- Sharpening Guide Modal -->
-<div id="guideModal" class="modal-overlay" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
-    <div id="guideTitle" class="modal-header">Sharpening Guide</div>
-    <div id="guideContent" class="modal-body"></div>
-    <div class="modal-actions">
-      <button id="copyGuideBtn" class="btn" type="button">Copy to Clipboard</button>
-      <button id="closeGuideBtn" class="btn" type="button">Close</button>
+  <!-- Sharpening Guide Modal -->
+  <div id="guideModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+      <div id="guideTitle" class="modal-header">Sharpening Guide</div>
+      <div id="guideContent" class="modal-body"></div>
+      <div class="modal-actions">
+        <button id="copyGuideBtn" class="btn" type="button">Copy to Clipboard</button>
+        <button id="closeGuideBtn" class="btn" type="button">Close</button>
+      </div>
     </div>
   </div>
-</div>
   
   <script src="app.js?v=4.1.0" defer></script>
   <script>
@@ -64,6 +67,5 @@
     © 2025 Knife Steel & Sharpening Reference — <strong class="visible-version">v4.1.0</strong><br />
     Icons: 🛡️ Toughness · 💧 Corrosion · 🪨 Sharpening ease/difficulty · ⚙️ Carbide content · 🏭 Manufacturers who regularly hit optimal HRC
   </footer>
-
 </body>
 </html>
