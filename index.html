@@ -19,8 +19,10 @@
 
   <main id="cards" class="cards-root" aria-live="polite"></main>
 
-  <aside id="compareTray" class="compare-tray" hidden aria-hidden="true" aria-label="Compare tray">
-    <!-- compare tray content unchanged -->
+  <aside id="compareTray" hidden aria-hidden="true">
+    <div id="compareList"></div>
+      <button id="clearCompare" class="btn">Clear</button>
+      <button id="copyRecipe" class="btn">Sharpening Guide</button>
   </aside>
 
 <!-- Sharpening Guide Modal -->
@@ -35,11 +37,6 @@
   </div>
 </div>
   
-  <footer class="app-footer">
-    © 2025 Knife Steel & Sharpening Reference — <strong class="visible-version">v4.1.0</strong><br />
-    Icons: 🛡️ Toughness · 💧 Corrosion · 🪨 Sharpening ease/difficulty · ⚙️ Carbide content · 🏭 Manufacturers who regularly hit optimal HRC
-  </footer>
-
   <script src="app.js?v=4.1.0" defer></script>
   <script>
     if ("serviceWorker" in navigator) {
@@ -62,5 +59,11 @@
       });
     }
   </script>
+
+  <footer class="app-footer">
+    © 2025 Knife Steel & Sharpening Reference — <strong class="visible-version">v4.1.0</strong><br />
+    Icons: 🛡️ Toughness · 💧 Corrosion · 🪨 Sharpening ease/difficulty · ⚙️ Carbide content · 🏭 Manufacturers who regularly hit optimal HRC
+  </footer>
+
 </body>
 </html>
