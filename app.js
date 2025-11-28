@@ -1,6 +1,9 @@
-// Knife Steel Reference v4.1.0 — production-ready (pull-to-refresh removed)
+// Knife Steel Reference — production-ready
 (function () {
   "use strict";
+
+  // --- Version constant ---
+  const APP_VERSION = "4.1.1";
 
   // --- Utilities ---
   function el(id) { return document.getElementById(id); }
@@ -22,14 +25,13 @@
     index: [],
     compare: [],
     activeGlobalGrind: "",
-    appVersion: readAppVersion()
+    appVersion: APP_VERSION
   };
 
-  function readAppVersion() {
-    var body = document.body;
-    return body && body.getAttribute("data-app-version") ? body.getAttribute("data-app-version") : "4.0.0";
-  }
+  function readAppVersion() { return APP_VERSION; }
 
+}
+  
   // --- Defaults maps (unchanged) ---
   var defaultBySteelClass = {
     vanadiumHeavy: {
@@ -550,7 +552,7 @@ function cardNode(s) {
   // --- Robust fetch with cache-bust & fallback ---
   async function loadSteels(bustVersion) {
     var base = "steels.json";
-    var bust = base + "?v=" + encodeURIComponent(bustVersion || state.appVersion || Date.now());
+    var bust = base + "?v=" + encodeURIComponent(bustVersion || APP_VERSION || Date.now());
     try {
       var r = await fetch(bust, { cache: "no-store" });
       if (!r.ok) throw new Error("Failed to fetch " + bust + ": " + r.status + " " + r.statusText);
