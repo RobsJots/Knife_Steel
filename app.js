@@ -642,21 +642,6 @@ async function init() {
   // Set the version attribute on <body>
   document.body.setAttribute("data-app-version", APP_VERSION);
 
-  var vSpan = document.querySelector(".version");
-  if (vSpan) vSpan.textContent = APP_VERSION;
-  var vStrong = document.querySelector(".visible-version");
-  if (vStrong) vStrong.textContent = APP_VERSION;
-
-  var manifestLink = document.querySelector('link[rel="manifest"]');
-  if (manifestLink) manifestLink.href = "manifest.webmanifest?v=" + APP_VERSION;
-  var cssLink = document.querySelector('link[rel="stylesheet"]');
-  if (cssLink) cssLink.href = "app.css?v=" + APP_VERSION;
-
-// --- Register service worker with version ---
-  if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js?v=" + APP_VERSION);
-}
-
   // Update header <span class="version"> and footer <strong class="visible-version">
   var vSpan = document.querySelector(".version");
   if (vSpan) vSpan.textContent = APP_VERSION;
@@ -669,6 +654,10 @@ async function init() {
   var cssLink = document.querySelector('link[rel="stylesheet"]');
   if (cssLink) cssLink.href = "app.css?v=" + APP_VERSION;
 
+  // --- Register service worker with version ---
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js?v=" + APP_VERSION);
+  }
   // -------------------------------
   // 2. Grab DOM elements
   // -------------------------------
