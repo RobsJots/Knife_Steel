@@ -3,7 +3,7 @@
   "use strict";
 
   // --- Version constant ---
-  const APP_VERSION = "4.1.1";
+  const APP_VERSION = "4.1.2";
 
   // --- Utilities ---
   function el(id) { return document.getElementById(id); }
