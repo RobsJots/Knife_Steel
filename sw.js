@@ -1,16 +1,15 @@
-// Production service worker v4.1 — scope-safe, cache-clean
+// Production service worker v4.1 — scope-safe, cache-clean, cache-busting
 const CACHE_NAME = "ksr-static-v4.1";
 const CORE_ASSETS = [
   "./",
-  "./index.html",
-  "./app.css",
-  "./app.js",
-  "./manifest.webmanifest",
+  "./index.html?v=4.1.0",
+  "./app.css?v=4.1.0",
+  "./app.js?v=4.1.0",
+  "./manifest.webmanifest?v=4.1.0",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
 ];
 
-// Install: cache core assets
 self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -20,7 +19,6 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate: claim clients and clear old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
@@ -33,20 +31,16 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Message handler to support skipWaiting from the page
 self.addEventListener("message", (evt) => {
-  if (!evt.data) return;
-  if (evt.data.type === "SKIP_WAITING") {
+  if (evt.data && evt.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });
 
-// Fetch: network-first for steels.json and navigation, cache-first for others
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Network-first for steels.json
   if (url.pathname.endsWith("steels.json")) {
     event.respondWith(
       fetch(req).then((res) => {
@@ -58,19 +52,17 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Network-first for navigation requests
   if (req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html")) {
     event.respondWith(
       fetch(req).then((res) => {
         const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        caches.open(CACHE_NAME).then((cache) => cache.put(req.url, copy));
         return res;
-      }).catch(() => caches.match("./index.html"))
+      }).catch(() => caches.match("./index.html?v=4.1.0"))
     );
     return;
   }
 
-  // Cache-first for other requests
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
