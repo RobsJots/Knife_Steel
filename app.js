@@ -298,17 +298,20 @@
   }
 
   // --- Compare tray ---
-  function toggleCompare(steel) {
-    var idx = state.compare.findIndex(function (s) { return s.name === steel.name; });
-    if (idx === -1) {
-      if (state.compare.length >= 3) { alert("Compare tray supports up to 3 items."); return; }
-      state.compare.push(steel);
-    } else {
-      state.compare.splice(idx, 1);
+function toggleCompare(steel) {
+  var idx = state.compare.findIndex(function (s) { return s.name === steel.name; });
+  if (idx === -1) {
+    if (state.compare.length >= 2) {
+      alert("Compare tray supports only 2 steels. The oldest will be replaced.");
+      state.compare.shift(); // remove oldest
     }
-    renderCompareTray();
-    syncCompareCheckboxes();
+    state.compare.push(steel);
+  } else {
+    state.compare.splice(idx, 1);
   }
+  renderCompareTray();
+  syncCompareCheckboxes();
+}
 
   function renderCompareTray() {
   var tray = el("compareTray");
