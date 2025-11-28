@@ -1,15 +1,16 @@
 // ============================================================
-// Knife Steel Reference — Production Service Worker
-// Scope-safe, cache-clean, cache-busting
+// Knife Steel Reference — Service Worker
+// Version is passed via registration query (?v=APP_VERSION)
 // ============================================================
 
-// --- Version & Cache Name ---
-const APP_VERSION = "4.1.1";
+// --- Read version from registration query ---
+const params = new URLSearchParams(self.location.search);
+const APP_VERSION = params.get("v") || "dev";
 const CACHE_NAME = "ksr-static-" + APP_VERSION;
 
 // --- Core Assets to Precache ---
 // These are the essential files for offline use.
-// Note: query strings use APP_VERSION for cache-busting.
+// Query strings use APP_VERSION for cache-busting.
 const CORE_ASSETS = [
   "./",
   "./index.html?v=" + APP_VERSION,
