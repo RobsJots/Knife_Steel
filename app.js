@@ -547,33 +547,21 @@
   }
 
   // --- Robust fetch with cache-bust & fallback ---
-  async function loadSteels(bustVersion) {
-    var base = "steels.json";
-    var bust = base + "?v=" + encodeURIComponent(bustVersion || APP_VERSION || Date.now());
-    try {
-      var r = await fetch(bust, { cache: "no-store" });
-      if (!r.ok) throw new Error("Failed to fetch " + bust + ": " + r.status + " " + r.statusText);
-      var text = await r.text();
-      var parsed = JSON.parse(text);
-      if (!Array.isArray(parsed)) throw new Error("steels.json root is not an array");
-      console.log("Loaded steels (primary):", parsed.length);
-      return parsed;
-    } catch (e) {
-      console.warn("Primary fetch failed, trying fallback:", e.message);
-      try {
-        var r2 = await fetch(base, { cache: "reload" });
-        if (!r2.ok) throw new Error("Fallback fetch failed: " + r2.status + " " + r2.statusText);
-        var text2 = await r2.text();
-        var parsed2 = JSON.parse(text2);
-        if (!Array.isArray(parsed2)) throw new Error("steels.json root is not an array (fallback)");
-        console.log("Loaded steels (fallback):", parsed2.length);
-        return parsed2;
-      } catch (e2) {
-        showErrorBanner("Could not load steels.json: " + e2.message);
-        return [];
-      }
-    }
+ async function loadSteels(bustVersion) {
+  const base = "steels.json";
+  const url = bustVersion ? base + "?v=" + Date.now() : base;
+  try {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error("Failed to fetch steels.json: " + r.status);
+    const parsed = await r.json();
+    if (!Array.isArray(parsed)) throw new Error("steels.json root is not an array");
+    console.log("Loaded steels:", parsed.length);
+    return parsed;
+  } catch (e) {
+    showErrorBanner("Could not load steels.json: " + e.message);
+    return [];
   }
+}
 
   // --- Expand/collapse helpers ---
   function expandAllCards() { document.querySelectorAll(".card details").forEach(function (d) { d.open = true; }); }
