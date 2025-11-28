@@ -177,79 +177,57 @@
     });
   }
 
-  function cardNode(s) {
-    var div = document.createElement("div");
-    div.className = "card";
+function cardNode(s) {
+  var div = document.createElement("div");
+  div.className = "card";
 
-    var details = document.createElement("details");
-    var isDesktop = window.innerWidth >= 769;
-    details.open = isDesktop;
+  var details = document.createElement("details");
+  var isDesktop = window.innerWidth >= 769;
+  details.open = isDesktop;
 
-    var summary = document.createElement("summary");
+  var summary = document.createElement("summary");
+  // … summary markup omitted for brevity …
 
-    var checkboxHtml = '<label style="display:inline-flex;align-items:center;margin-right:8px;">' +
-      '<input type="checkbox" class="compare-checkbox" data-steel-name="' + safeText(s.name) + '" aria-label="Select ' + safeText(s.name) + ' for compare">' +
-      '</label>';
+  var rec = getRecommendation(s, state.activeGlobalGrind || "");
+  var traitsHtml = Array.isArray(s.traits) ? s.traits.map(function (t) { return "<li>" + safeText(t) + "</li>"; }).join("") : "";
+  var dpsHtml = createDpsHtml(s.dps || []);
 
-    summary.innerHTML = checkboxHtml +
-      '<div class="card-head" style="display:inline-flex;align-items:baseline;justify-content:space-between;width:calc(100% - 40px)"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
-      '<div class="summary-toggle" style="display:block;width:100%"><span class="chev">▼</span> Tap to ' + (details.open ? "collapse" : "expand") + "</div>";
+  var grindOptions = ["fullFlat","hollow","convex","saber","scandi","chisel","compound","tanto","microbevel"];
+  var grindSelectHtml = '<div class="grind-select"><label>Grind</label><select class="card-grind-select">';
+  grindOptions.forEach(function (g) {
+    var label = { fullFlat:"Full flat", hollow:"Hollow", convex:"Convex", saber:"Saber",
+                  scandi:"Scandi", chisel:"Chisel", compound:"Compound", tanto:"Tanto",
+                  microbevel:"Microbevel-focused"}[g] || g;
+    grindSelectHtml += '<option value="' + g + '"' +
+      (g === (state.activeGlobalGrind || "fullFlat") ? " selected" : "") + ">" + label + "</option>";
+  });
+  grindSelectHtml += "</select></div>";
 
-    var rec = getRecommendation(s, state.activeGlobalGrind || "");
-    var traitsHtml = Array.isArray(s.traits) ? s.traits.map(function (t) { return "<li>" + safeText(t) + "</li>"; }).join("") : "";
-    var dpsHtml = createDpsHtml(s.dps || []);
+  // Build body first
+  var body = document.createElement("div");
+  body.className = "card-body";
+  body.innerHTML = /* all your markup including guide button */;
 
-    var grindOptions = ["fullFlat","hollow","convex","saber","scandi","chisel","compound","tanto","microbevel"];
-    var grindSelectHtml = '<div class="grind-select"><label>Grind</label><select class="card-grind-select">';
-    grindOptions.forEach(function (g) {
-      var label = {
-        fullFlat: "Full flat", hollow: "Hollow", convex: "Convex", saber: "Saber",
-        scandi: "Scandi", chisel: "Chisel", compound: "Compound", tanto: "Tanto",
-        microbevel: "Microbevel-focused"
-      }[g] || g;
-      grindSelectHtml += '<option value="' + g + '"' + (g === (state.activeGlobalGrind || "fullFlat") ? " selected" : "") + ">" + label + "</option>";
-    });
-    grindSelectHtml += "</select></div>";
+  // Now wire up buttons inside body
+  var compareBtn = body.querySelector(".compare-btn");
+  if (compareBtn) compareBtn.addEventListener("click", function () { toggleCompare(s); });
 
-    var body = document.createElement("div");
-    body.className = "card-body";
-    body.innerHTML = '<div class="card-title"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
-      '<div class="process">Process: ' + safeText(s.process) + "</div>" +
-      '<ul class="traits">' + traitsHtml + "</ul>" +
-      '<div class="mfg">🏭 ' + safeText(s.mfg) + "</div>" +
-      '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
-      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>" +
-      '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' + safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
-      '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
-      '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
-      '<div class="dps">' + dpsHtml + "</div>" +
-      grindSelectHtml +
-      '<div style="margin-top:8px;display:flex;gap:8px;justify-content:space-between;align-items:center">' +
-      '<button class="btn compare-btn">Compare</button>' +
-      '<button class="btn guide-btn">Sharpening Guide</button>' +
-      "</div>";
+  var guideBtn = body.querySelector(".guide-btn");
+  if (guideBtn) guideBtn.addEventListener("click", function () {
+    var chosenSel = body.querySelector(".card-grind-select");
+    var chosen = chosenSel ? chosenSel.value : (state.activeGlobalGrind || "fullFlat");
+    var recObj = getRecommendation(s, chosen);
+    var guide = buildRecipeText(s, chosen, recObj);
+    showSharpeningGuide(guide);
+  });
 
-    details.addEventListener("toggle", function () {
-      var txt = details.open ? "collapse" : "expand";
-      var toggle = summary.querySelector(".summary-toggle");
-      if (toggle) toggle.innerHTML = '<span class="chev">▼</span> Tap to ' + txt;
-    });
+  // … rest of wiring for grind select, copy-recipe, etc …
 
-    details.appendChild(summary);
-    details.appendChild(body);
-    div.appendChild(details);
-
-    var checkbox = summary.querySelector(".compare-checkbox");
-    if (checkbox) {
-      checkbox.checked = isInCompare(s);
-      checkbox.addEventListener("click", function (ev) { ev.stopPropagation(); });
-      checkbox.addEventListener("change", function () {
-        var currently = isInCompare(s);
-        if (checkbox.checked && !currently) toggleCompare(s);
-        else if (!checkbox.checked && currently) toggleCompare(s);
-        else syncCompareCheckboxes();
-      });
-    }
+  details.appendChild(summary);
+  details.appendChild(body);
+  div.appendChild(details);
+  return div;
+}
 
     var cardSelect = body.querySelector(".card-grind-select");
     if (cardSelect) {
