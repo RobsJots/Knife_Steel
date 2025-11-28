@@ -2,6 +2,14 @@
 (function () {
   "use strict";
 
+  //---App Version---
+  function readAppVersion() {
+  var body = document.body;
+  return body && body.getAttribute("data-app-version")
+    ? body.getAttribute("data-app-version")
+    : "4.1.0";
+}
+  
   // --- Utilities ---
   function el(id) { return document.getElementById(id); }
   function safeText(s) { return String(s == null ? "" : s); }
