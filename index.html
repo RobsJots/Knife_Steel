@@ -13,21 +13,19 @@
 </head>
 <body data-app-version="4.1.0">
 <header class="app-header">
-  <h1>Knife Steel Reference <span class="version">v4.1.0</span></h1>
+  <h1>Knife Steel Reference <span class="version"></span></h1>
 
-  <!-- Search bar -->
+  <!-- Search bar (mobile only via CSS) -->
   <div class="search-wrap">
     <input id="steelSearch" type="text" placeholder="Search steels…" />
     <button id="clearSearch" class="btn" type="button">Clear</button>
     <ul id="suggestions" class="suggestions" role="listbox"></ul>
   </div>
 
-  <!-- Controls -->
+  <!-- Controls (mobile only via CSS) -->
   <div class="controls">
     <button id="expandAll" class="btn" type="button">Expand All</button>
     <button id="collapseAll" class="btn" type="button">Collapse All</button>
-
-    <!-- Grind filter -->
     <label for="grindSelect">Grind:</label>
     <select id="grindSelect" class="btn">
       <option value="all">All grinds</option>
