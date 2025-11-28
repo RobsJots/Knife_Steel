@@ -337,16 +337,15 @@
         '<div class="compare-rec"><strong>Finish:</strong> ' + safeText(rec.dpsStyle) + "</div>" +
         '<div class="compare-rec"><strong>Grit:</strong> ' + safeText(rec.gritRange) + "</div>" +
         '<div class="compare-rec"><strong>Microbevel:</strong> ' +
-          safeText(rec.microbevel && rec.microbevel.angle) + " @ " +
-          safeText(rec.microbevel && rec.microbevel.grit) + "</div>" +
-        '<div class="compare-rec"><strong>Notes:</strong> ' + safeText(rec.notes) + "</div>" +
-        '<div class="compare-rec"><strong>Traits:</strong> ' +
-          (Array.isArray(s.traits) ? s.traits.join(", ") : "") + "</div>" +
-        '<div class="compare-rec"><strong>🏭</strong> ' + safeText(s.mfg) + "</div>" +
-        '<div class="compare-actions">' +
-          '<button class="btn guide-btn">Sharpening Guide</button>' +
-          '<button class="btn remove-compare">Remove</button>' +
-        "</div>";
+          safeText(rec.microbevel?.angle) + " @ " + safeText(rec.microbevel?.grit) + "</div>" +
+       '<div class="compare-rec"><strong>Notes:</strong> ' + safeText(rec.notes) + "</div>" +
+       '<div class="compare-rec"><strong>Traits:</strong> ' +
+         (Array.isArray(s.traits) ? s.traits.join(", ") : "") + "</div>" +
+       '<div class="compare-rec"><strong>🏭</strong> ' + safeText(s.mfg) + "</div>" +
+       '<div class="compare-actions">' +
+         '<button class="btn guide-btn">Sharpening Guide</button>' +
+         '<button class="btn remove-compare">Remove</button>' +
+  "</div>";
 
       var guideBtn = item.querySelector(".guide-btn");
       if (guideBtn) guideBtn.addEventListener("click", function () {
