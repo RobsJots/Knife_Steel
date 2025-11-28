@@ -38,6 +38,14 @@ html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,syst
 .mobile-controls{display:none;gap:8px}
 .btn{padding:8px 12px;border:1px solid #ddd;border-radius:6px;background:#f7f7f7;color:#333;font-weight:600;cursor:pointer}
 .btn:hover{background:#efefef}
+/* Refresh button */
+#refreshBtn {
+  background: var(--grit-pill); /* your blue accent */
+  color: #fff;
+}
+#refreshBtn:hover {
+  background: #3a3acc; /* darker hover */
+}
 @media (max-width:768px){.mobile-controls{display:flex}}
 
 /* Layout */
@@ -257,3 +265,4 @@ html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,syst
   .cards-root { padding: 20px; min-height: calc(100vh - 220px); }
   .controls-row { gap: 16px; }
 }
+
