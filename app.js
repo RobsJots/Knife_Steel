@@ -634,29 +634,39 @@ function cardNode(s) {
     }
   }
 
-  // --- Init & wiring ---
-  async function init() {
-    var input = el("steelSearch");
-    var clearBtn = el("clearSearch");
-    var expandBtn = el("expandAll");
-    var collapseBtn = el("collapseAll");
-    var grindFilter = el("grindSelect");
-    var clearCompareBtn = el("clearCompare");
-    var copyRecipeBtn = el("copyRecipe");
-    var refreshBtn = el("refreshBtn");
-    var closeGuideBtn = el("closeGuideBtn");
-    var copyGuideBtn = el("copyGuideBtn");
-    // Inject version into DOM
-    document.body.setAttribute("data-app-version", APP_VERSION);
-    var vSpan = document.querySelector(".version");
-    if (vSpan) vSpan.textContent = APP_VERSION;
-    var vStrong = document.querySelector(".visible-version");
-    if (vStrong) vStrong.textContent = APP_VERSION;
+// --- Init & wiring ---
+async function init() {
+  // Inject version into DOM and bust caches
+  document.body.setAttribute("data-app-version", APP_VERSION);
 
+  // Update title and footer
+  var vSpan = document.querySelector(".version");
+  if (vSpan) vSpan.textContent = APP_VERSION;
+  var vStrong = document.querySelector(".visible-version");
+  if (vStrong) vStrong.textContent = APP_VERSION;
 
-    // Modal buttons (if modal HTML present)
-    if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
-    if (copyGuideBtn) copyGuideBtn.addEventListener("click", copyGuideToClipboard);
+  // Bust cache for manifest and CSS by appending ?v=APP_VERSION
+  var manifestLink = document.querySelector('link[rel="manifest"]');
+  if (manifestLink) manifestLink.href = "manifest.webmanifest?v=" + APP_VERSION;
+  var cssLink = document.querySelector('link[rel="stylesheet"]');
+  if (cssLink) cssLink.href = "app.css?v=" + APP_VERSION;
+
+  // Now grab your DOM elements
+  var input = el("steelSearch");
+  var clearBtn = el("clearSearch");
+  var expandBtn = el("expandAll");
+  var collapseBtn = el("collapseAll");
+  var grindFilter = el("grindSelect");
+  var clearCompareBtn = el("clearCompare");
+  var copyRecipeBtn = el("copyRecipe");
+  var refreshBtn = el("refreshBtn");
+  var closeGuideBtn = el("closeGuideBtn");
+  var copyGuideBtn = el("copyGuideBtn");
+
+  // Modal buttons (if modal HTML present)
+  if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
+  if (copyGuideBtn) copyGuideBtn.addEventListener("click", copyGuideToClipboard);
+
 
     if (clearBtn) clearBtn.style.display = "none";
 
