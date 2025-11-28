@@ -650,7 +650,6 @@
     var collapseBtn = el("collapseAll");
     var grindFilter = el("grindSelect");
     var clearCompareBtn = el("clearCompare");
-    var copyRecipeBtn = el("copyRecipe");
     var refreshBtn = el("refreshBtn");
     var closeGuideBtn = el("closeGuideBtn");
     var copyGuideBtn = el("copyGuideBtn");
@@ -736,8 +735,7 @@
 
     // 10. Compare tray actions
     if (clearCompareBtn) clearCompareBtn.addEventListener("click", clearCompare);
-    if (copyRecipeBtn) copyRecipeBtn.addEventListener("click", copyCompareRecipes);
-
+  
     // 11. Suggestions dropdown close
     document.addEventListener("click", function (e) {
       var s = el("suggestions");
