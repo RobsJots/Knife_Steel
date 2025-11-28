@@ -4,43 +4,42 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Knife Steel Reference <span class="version"></span></title>
-  <!-- Cache-busting query string ensures manifest refresh -->
+  <!-- Cache-busting query string will be injected dynamically by app.js -->
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="app.css" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
 </head>
+<body data-app-version="">
+  <header class="app-header">
+    <h1>Knife Steel Reference <span class="version"></span></h1>
 
-<body data-app-version="4.1.0">
-<header class="app-header">
-  <h1>Knife Steel Reference <span class="version"></span></h1>
+    <!-- Search bar (mobile only via CSS) -->
+    <div class="search-wrap">
+      <input id="steelSearch" type="text" placeholder="Search steels…" />
+      <button id="clearSearch" class="btn" type="button">Clear</button>
+      <ul id="suggestions" class="suggestions" role="listbox"></ul>
+    </div>
 
-  <!-- Search bar (mobile only via CSS) -->
-  <div class="search-wrap">
-    <input id="steelSearch" type="text" placeholder="Search steels…" />
-    <button id="clearSearch" class="btn" type="button">Clear</button>
-    <ul id="suggestions" class="suggestions" role="listbox"></ul>
-  </div>
-
-  <!-- Controls (mobile only via CSS) -->
-  <div class="controls">
-    <button id="expandAll" class="btn" type="button">Expand All</button>
-    <button id="collapseAll" class="btn" type="button">Collapse All</button>
-    <label for="grindSelect">Grind:</label>
-    <select id="grindSelect" class="btn">
-      <option value="all">All grinds</option>
-      <option value="fullFlat">Full flat</option>
-      <option value="hollow">Hollow</option>
-      <option value="convex">Convex</option>
-      <option value="saber">Saber</option>
-      <option value="scandi">Scandi</option>
-      <option value="chisel">Chisel</option>
-      <option value="compound">Compound</option>
-      <option value="microbevel">Microbevel-focused</option>
-    </select>
-  </div>
-</header>
+    <!-- Controls (mobile only via CSS) -->
+    <div class="controls">
+      <button id="expandAll" class="btn" type="button">Expand All</button>
+      <button id="collapseAll" class="btn" type="button">Collapse All</button>
+      <label for="grindSelect">Grind:</label>
+      <select id="grindSelect" class="btn">
+        <option value="all">All grinds</option>
+        <option value="fullFlat">Full flat</option>
+        <option value="hollow">Hollow</option>
+        <option value="convex">Convex</option>
+        <option value="saber">Saber</option>
+        <option value="scandi">Scandi</option>
+        <option value="chisel">Chisel</option>
+        <option value="compound">Compound</option>
+        <option value="microbevel">Microbevel-focused</option>
+      </select>
+    </div>
+  </header>
 
   <main id="cards" class="cards-root" aria-live="polite"></main>
 
@@ -65,12 +64,12 @@
     </div>
   </div>
   
-  <script src="app.js?v=4.1.0" defer></script>
+  <script src="app.js" defer></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try {
-          const reg = await navigator.serviceWorker.register("sw.js?v=4.1.0");
+          const reg = await navigator.serviceWorker.register("sw.js");
           if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
           reg.addEventListener("updatefound", () => {
             const newSW = reg.installing;
@@ -89,9 +88,8 @@
   </script>
 
   <footer class="app-footer">
-  © 2025 Knife Steel & Sharpening Reference — <strong class="visible-version"></strong><br />
-  Icons: 🛡️ Toughness · 💧 Corrosion · 🪨 Sharpening ease/difficulty · ⚙️ Carbide content · 🏭 Manufacturers who regularly hit optimal HRC
-</footer>
-
+    © 2025 Knife Steel & Sharpening Reference — <strong class="visible-version"></strong><br />
+    Icons: 🛡️ Toughness · 💧 Corrosion · 🪨 Sharpening ease/difficulty · ⚙️ Carbide content · 🏭 Manufacturers who regularly hit optimal HRC
+  </footer>
 </body>
 </html>
