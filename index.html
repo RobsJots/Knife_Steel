@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<link rel="manifest" href="manifest.webmanifest?v=4.1.0" />
-  
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Knife Steel Reference v4.1.0</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="app.css" />
+  <!-- Cache-busting query string ensures manifest refresh -->
+  <link rel="manifest" href="manifest.webmanifest?v=4.1.0" />
+  <link rel="stylesheet" href="app.css?v=4.1.0" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -30,12 +28,12 @@
     Icons: 🛡️ Toughness · 💧 Corrosion · 🪨 Sharpening ease/difficulty · ⚙️ Carbide content · 🏭 Manufacturers who regularly hit optimal HRC
   </footer>
 
-  <script src="app.js" defer></script>
+  <script src="app.js?v=4.1.0" defer></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try {
-          const reg = await navigator.serviceWorker.register("sw.js");
+          const reg = await navigator.serviceWorker.register("sw.js?v=4.1.0");
           if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
           reg.addEventListener("updatefound", () => {
             const newSW = reg.installing;
