@@ -113,6 +113,48 @@ html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,syst
 /* Slightly reduce summary padding so checkbox and title align neatly */
 .card summary { padding: 10px 12px; }
 
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal window */
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  padding: 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.modal-body {
+  max-height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 /* Compare tray */
 .compare-tray{position:fixed;right:16px;bottom:16px;width:320px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,0.12);padding:12px;z-index:50}
 .compare-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -214,4 +256,5 @@ html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,syst
   .cards-root { padding: 20px; min-height: calc(100vh - 220px); }
   .controls-row { gap: 16px; }
 }
+
 
