@@ -60,7 +60,7 @@ self.addEventListener("fetch", (event) => {
         const copy = res.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(req.url, copy));
         return res;
-      }).catch(() => caches.match("./index.html?v=4.1.0"))
+      }).catch(() => caches.match("./index.html?v=" + APP_VERSION))
     );
     return;
   }
