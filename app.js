@@ -636,10 +636,13 @@ function cardNode(s) {
 
 // --- Init & wiring ---
 async function init() {
-  // Inject version into DOM and bust caches
+  // -------------------------------
+  // 1. Inject version into DOM
+  // -------------------------------
+  // Set the version attribute on <body>
   document.body.setAttribute("data-app-version", APP_VERSION);
 
-  // Update title and footer
+  // Update header <span class="version"> and footer <strong class="visible-version">
   var vSpan = document.querySelector(".version");
   if (vSpan) vSpan.textContent = APP_VERSION;
   var vStrong = document.querySelector(".visible-version");
@@ -651,7 +654,9 @@ async function init() {
   var cssLink = document.querySelector('link[rel="stylesheet"]');
   if (cssLink) cssLink.href = "app.css?v=" + APP_VERSION;
 
-  // Now grab your DOM elements
+  // -------------------------------
+  // 2. Grab DOM elements
+  // -------------------------------
   var input = el("steelSearch");
   var clearBtn = el("clearSearch");
   var expandBtn = el("expandAll");
@@ -663,96 +668,128 @@ async function init() {
   var closeGuideBtn = el("closeGuideBtn");
   var copyGuideBtn = el("copyGuideBtn");
 
-  // Modal buttons (if modal HTML present)
+  // -------------------------------
+  // 3. Modal buttons
+  // -------------------------------
   if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
   if (copyGuideBtn) copyGuideBtn.addEventListener("click", copyGuideToClipboard);
 
+  // -------------------------------
+  // 4. Initial UI state
+  // -------------------------------
+  if (clearBtn) clearBtn.style.display = "none";
 
-    if (clearBtn) clearBtn.style.display = "none";
+  // -------------------------------
+  // 5. Load steels.json
+  // -------------------------------
+  try {
+    state.steels = await loadSteels();
+  } catch (e) {
+    showErrorBanner("Load error: " + e.message);
+    state.steels = [];
+  }
 
-    // Load steels.json
-    try {
-      state.steels = await loadSteels();
-    } catch (e) {
-      showErrorBanner("Load error: " + e.message);
-      state.steels = [];
-    }
+  try {
+    buildIndex(state.steels);
+    renderGrouped(state.steels);
+  } catch (e) {
+    showErrorBanner("Render error: " + e.message);
+  }
 
-    try {
-      buildIndex(state.steels);
-      renderGrouped(state.steels);
-    } catch (e) {
-      showErrorBanner("Render error: " + e.message);
-    }
+  // -------------------------------
+  // 6. Wire refresh button
+  // -------------------------------
+  if (refreshBtn) refreshBtn.addEventListener("click", forceReloadAll);
 
-    // Wire refresh button
-    if (refreshBtn) refreshBtn.addEventListener("click", forceReloadAll);
+  // -------------------------------
+  // 7. Search wiring
+  // -------------------------------
+  function updateClearVisibility() {
+    if (!input || !clearBtn) return;
+    clearBtn.style.display = input.value.trim().length ? "inline-block" : "none";
+  }
 
-    // Search
-    function updateClearVisibility() { if (!input || !clearBtn) return; clearBtn.style.display = input.value.trim().length ? "inline-block" : "none"; }
-    if (input) {
-      input.addEventListener("input", function (e) {
-        updateClearVisibility();
+  if (input) {
+    input.addEventListener("input", function (e) {
+      updateClearVisibility();
+      var q = e.target.value;
+      if (!q) {
+        renderSuggestions([]);
+        renderGrouped(state.steels);
+        return;
+      }
+      renderSuggestions(fuzzyFind(q));
+    });
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
         var q = e.target.value;
-        if (!q) { renderSuggestions([]); renderGrouped(state.steels); return; }
-        renderSuggestions(fuzzyFind(q));
-      });
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-          var q = e.target.value;
-          var results = fuzzyFind(q, 50);
-          renderSuggestions([]);
-          if (results.length) renderCards(results, true);
-          else renderGrouped(state.steels);
-          scrollToCards();
-        }
-      });
-    }
-    if (clearBtn) clearBtn.addEventListener("click", function () {
+        var results = fuzzyFind(q, 50);
+        renderSuggestions([]);
+        if (results.length) renderCards(results, true);
+        else renderGrouped(state.steels);
+        scrollToCards();
+      }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", function () {
       if (input) input.value = "";
       updateClearVisibility();
       renderSuggestions([]);
       renderGrouped(state.steels);
       scrollToCards();
     });
+  }
 
-    // Expand/collapse
-    if (expandBtn) expandBtn.addEventListener("click", expandAllCards);
-    if (collapseBtn) collapseBtn.addEventListener("click", collapseAllCards);
+  // -------------------------------
+  // 8. Expand/collapse wiring
+  // -------------------------------
+  if (expandBtn) expandBtn.addEventListener("click", expandAllCards);
+  if (collapseBtn) collapseBtn.addEventListener("click", collapseAllCards);
 
-    // Global grind filter
-    if (grindFilter) {
-      state.activeGlobalGrind = grindFilter.value && grindFilter.value !== "all" ? grindFilter.value : "";
-      grindFilter.addEventListener("change", function (e) {
-        var v = e.target.value || "";
-        state.activeGlobalGrind = (v === "all") ? "" : v;
-        renderGrouped(state.steels);
-      });
-    }
-
-    // Compare tray actions
-    if (clearCompareBtn) clearCompareBtn.addEventListener("click", clearCompare);
-    if (copyRecipeBtn) copyRecipeBtn.addEventListener("click", copyCompareRecipes);
-
-    // Close suggestions when clicking outside
-    document.addEventListener("click", function (e) {
-      var s = el("suggestions");
-      var wrap = document.querySelector(".search-wrap");
-      if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
-    });
-
-    // Responsive re-render
-    var prevIsDesktop = window.innerWidth >= 769;
-    window.addEventListener("resize", function () {
-      var nowIsDesktop = window.innerWidth >= 769;
-      if (nowIsDesktop !== prevIsDesktop) {
-        prevIsDesktop = nowIsDesktop;
-        var q = (input && input.value) ? input.value.trim() : "";
-        if (q) renderCards(fuzzyFind(q), true);
-        else renderGrouped(state.steels);
-      }
+  // -------------------------------
+  // 9. Global grind filter
+  // -------------------------------
+  if (grindFilter) {
+    state.activeGlobalGrind = grindFilter.value && grindFilter.value !== "all" ? grindFilter.value : "";
+    grindFilter.addEventListener("change", function (e) {
+      var v = e.target.value || "";
+      state.activeGlobalGrind = (v === "all") ? "" : v;
+      renderGrouped(state.steels);
     });
   }
+
+  // -------------------------------
+  // 10. Compare tray actions
+  // -------------------------------
+  if (clearCompareBtn) clearCompareBtn.addEventListener("click", clearCompare);
+  if (copyRecipeBtn) copyRecipeBtn.addEventListener("click", copyCompareRecipes);
+
+  // -------------------------------
+  // 11. Suggestions dropdown close
+  // -------------------------------
+  document.addEventListener("click", function (e) {
+    var s = el("suggestions");
+    var wrap = document.querySelector(".search-wrap");
+    if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
+  });
+
+  // -------------------------------
+  // 12. Responsive re-render
+  // -------------------------------
+  var prevIsDesktop = window.innerWidth >= 769;
+  window.addEventListener("resize", function () {
+    var nowIsDesktop = window.innerWidth >= 769;
+    if (nowIsDesktop !== prevIsDesktop) {
+      prevIsDesktop = nowIsDesktop;
+      var q = (input && input.value) ? input.value.trim() : "";
+      if (q) renderCards(fuzzyFind(q), true);
+      else renderGrouped(state.steels);
+    }
+  });
+}
 
   // Start
   try { document.addEventListener("DOMContentLoaded", init); } catch (e) { showErrorBanner("Initialization error: " + e.message); }
