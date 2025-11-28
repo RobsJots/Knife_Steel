@@ -1,12 +1,13 @@
 // Production service worker — scope-safe, cache-clean, cache-busting
 const APP_VERSION = "4.1.1";
 const CACHE_NAME = "ksr-static-" + APP_VERSION;
+
 const CORE_ASSETS = [
   "./",
-  "./index.html?v=4.1.0",
-  "./app.css?v=4.1.0",
-  "./app.js?v=4.1.0",
-  "./manifest.webmanifest?v=4.1.0",
+  "./index.html?v=" + APP_VERSION,
+  "./app.css?v=" + APP_VERSION,
+  "./app.js?v=" + APP_VERSION,
+  "./manifest.webmanifest?v=" + APP_VERSION,
   "./icons/icon-192.png",
   "./icons/icon-512.png"
 ];
