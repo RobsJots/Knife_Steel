@@ -1,15 +1,7 @@
-// Knife Steel Reference v4.0.0 — production-ready (pull-to-refresh removed)
+// Knife Steel Reference v4.1.0 — production-ready (pull-to-refresh removed)
 (function () {
   "use strict";
 
-  //---App Version---
-  function readAppVersion() {
-  var body = document.body;
-  return body && body.getAttribute("data-app-version")
-    ? body.getAttribute("data-app-version")
-    : "4.1.0";
-}
-  
   // --- Utilities ---
   function el(id) { return document.getElementById(id); }
   function safeText(s) { return String(s == null ? "" : s); }
@@ -219,14 +211,6 @@
     });
     grindSelectHtml += "</select></div>";
 
-    var guideBtn = body.querySelector(".guide-btn");
-    if (guideBtn) guideBtn.addEventListener("click", function () {
-    var chosen = body.querySelector(".card-grind-select").value;
-    var recObj = getRecommendation(s, chosen);
-    var guide = buildRecipeText(s, chosen, recObj);
-    showSharpeningGuide(guide);
-    });
-    
     var body = document.createElement("div");
     body.className = "card-body";
     body.innerHTML = '<div class="card-title"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
@@ -286,11 +270,23 @@
     var compareBtn = body.querySelector(".compare-btn");
     if (compareBtn) compareBtn.addEventListener("click", function () { toggleCompare(s); });
 
+    // Wire the Sharpening Guide button AFTER body is built
+    var guideBtn = body.querySelector(".guide-btn");
+    if (guideBtn) guideBtn.addEventListener("click", function () {
+      var chosenSel = body.querySelector(".card-grind-select");
+      var chosen = chosenSel ? chosenSel.value : (state.activeGlobalGrind || "fullFlat");
+      var recObj = getRecommendation(s, chosen);
+      var guide = buildRecipeText(s, chosen, recObj);
+      showSharpeningGuide(guide);
+    });
+
+    // Retain copy-recipe wiring if present in markup (safe no-op if button not rendered)
     var copyBtn = body.querySelector(".copy-recipe-btn");
     if (copyBtn) copyBtn.addEventListener("click", function () {
-      var chosen = body.querySelector(".card-grind-select").value;
-      var recObj = getRecommendation(s, chosen);
-      var recipe = buildRecipeText(s, chosen, recObj);
+      var chosenSel2 = body.querySelector(".card-grind-select");
+      var chosen2 = chosenSel2 ? chosenSel2.value : (state.activeGlobalGrind || "fullFlat");
+      var recObj2 = getRecommendation(s, chosen2);
+      var recipe = buildRecipeText(s, chosen2, recObj2);
       copyToClipboard(recipe);
     });
 
@@ -383,39 +379,39 @@
     } catch (e) { alert("Copy not supported."); }
   }
 
+  // --- Modal helpers ---
   function showSharpeningGuide(text) {
-  var overlay = el("guideModal");
-  var content = el("guideContent");
-  if (!overlay || !content) return;
-  content.textContent = text;
-  overlay.style.display = "flex";
-  overlay.setAttribute("aria-hidden", "false");
-}
+    var overlay = el("guideModal");
+    var content = el("guideContent");
+    if (!overlay || !content) return;
+    content.textContent = text;
+    overlay.style.display = "flex";
+    overlay.setAttribute("aria-hidden", "false");
+  }
 
-function hideSharpeningGuide() {
-  var overlay = el("guideModal");
-  if (!overlay) return;
-  overlay.style.display = "none";
-  overlay.setAttribute("aria-hidden", "true");
-}
+  function hideSharpeningGuide() {
+    var overlay = el("guideModal");
+    if (!overlay) return;
+    overlay.style.display = "none";
+    overlay.setAttribute("aria-hidden", "true");
+  }
 
-function copyGuideToClipboard() {
-  var content = el("guideContent");
-  if (!content) return;
-  var text = content.textContent;
-  try {
-    navigator.clipboard.writeText(text).catch(() => {
-      var ta = document.createElement("textarea");
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    });
-  } catch (e) {}
-}
+  function copyGuideToClipboard() {
+    var content = el("guideContent");
+    if (!content) return;
+    var text = content.textContent;
+    try {
+      navigator.clipboard.writeText(text).catch(function () {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      });
+    } catch (e) {}
+  }
 
-  
   // --- Grouped panels rendering ---
   function renderGrouped(steels) {
     var root = el("cards");
@@ -511,10 +507,6 @@ function copyGuideToClipboard() {
     syncCompareCheckboxes();
   }
 
-  // --- Expand/collapse helpers ---
-  function expandAllCards() { document.querySelectorAll(".card details").forEach(function (d) { d.open = true; }); }
-  function collapseAllCards() { if (window.innerWidth < 769) document.querySelectorAll(".card details").forEach(function (d) { d.open = false; }); }
-
   // --- Robust fetch with cache-bust & fallback ---
   async function loadSteels(bustVersion) {
     var base = "steels.json";
@@ -543,6 +535,10 @@ function copyGuideToClipboard() {
       }
     }
   }
+
+  // --- Expand/collapse helpers ---
+  function expandAllCards() { document.querySelectorAll(".card details").forEach(function (d) { d.open = true; }); }
+  function collapseAllCards() { if (window.innerWidth < 769) document.querySelectorAll(".card details").forEach(function (d) { d.open = false; }); }
 
   // --- Force reload helper (used by Refresh button) ---
   async function forceReloadAll() {
@@ -608,6 +604,8 @@ function copyGuideToClipboard() {
     var refreshBtn = el("refreshBtn");
     var closeGuideBtn = el("closeGuideBtn");
     var copyGuideBtn = el("copyGuideBtn");
+
+    // Modal buttons (if modal HTML present)
     if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
     if (copyGuideBtn) copyGuideBtn.addEventListener("click", copyGuideToClipboard);
 
