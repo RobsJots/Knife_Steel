@@ -30,8 +30,6 @@
 
   function readAppVersion() { return APP_VERSION; }
 
-}
-  
   // --- Defaults maps (unchanged) ---
   var defaultBySteelClass = {
     vanadiumHeavy: {
@@ -179,125 +177,125 @@
     });
   }
 
-function cardNode(s) {
-  var div = document.createElement("div");
-  div.className = "card";
+  function cardNode(s) {
+    var div = document.createElement("div");
+    div.className = "card";
 
-  var details = document.createElement("details");
-  details.open = true; // always open initially so cards show on mobile/PWA
+    var details = document.createElement("details");
+    details.open = true; // always open initially so cards show on mobile/PWA
 
-  var summary = document.createElement("summary");
+    var summary = document.createElement("summary");
 
-  var checkboxHtml = '<label style="display:inline-flex;align-items:center;margin-right:8px;">' +
-    '<input type="checkbox" class="compare-checkbox" data-steel-name="' + safeText(s.name) + '" aria-label="Select ' + safeText(s.name) + ' for compare">' +
-    '</label>';
+    var checkboxHtml = '<label style="display:inline-flex;align-items:center;margin-right:8px;">' +
+      '<input type="checkbox" class="compare-checkbox" data-steel-name="' + safeText(s.name) + '" aria-label="Select ' + safeText(s.name) + ' for compare">' +
+      "</label>";
 
-  summary.innerHTML = checkboxHtml +
-    '<div class="card-head" style="display:inline-flex;align-items:baseline;justify-content:space-between;width:calc(100% - 40px)">' +
-      '<div class="name">' + safeText(s.name) + '</div>' +
-      '<div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div>" +
-    '</div>' +
-    '<div class="summary-toggle" style="display:block;width:100%"><span class="chev">▼</span> Tap to collapse</div>';
+    summary.innerHTML = checkboxHtml +
+      '<div class="card-head" style="display:inline-flex;align-items:baseline;justify-content:space-between;width:calc(100% - 40px)">' +
+        '<div class="name">' + safeText(s.name) + '</div>' +
+        '<div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div>" +
+      '</div>' +
+      '<div class="summary-toggle" style="display:block;width:100%"><span class="chev">▼</span> Tap to collapse</div>';
 
-  var rec = getRecommendation(s, state.activeGlobalGrind || "");
-  var traitsHtml = Array.isArray(s.traits) ? s.traits.map(function (t) { return "<li>" + safeText(t) + "</li>"; }).join("") : "";
-  var dpsHtml = createDpsHtml(s.dps || []);
+    var rec = getRecommendation(s, state.activeGlobalGrind || "");
+    var traitsHtml = Array.isArray(s.traits) ? s.traits.map(function (t) { return "<li>" + safeText(t) + "</li>"; }).join("") : "";
+    var dpsHtml = createDpsHtml(s.dps || []);
 
-  var grindOptions = ["fullFlat","hollow","convex","saber","scandi","chisel","compound","tanto","microbevel"];
-  var grindSelectHtml = '<div class="grind-select"><label>Grind</label><select class="card-grind-select">';
-  grindOptions.forEach(function (g) {
-    var label = {
-      fullFlat: "Full flat", hollow: "Hollow", convex: "Convex", saber: "Saber",
-      scandi: "Scandi", chisel: "Chisel", compound: "Compound", tanto: "Tanto",
-      microbevel: "Microbevel-focused"
-    }[g] || g;
-    grindSelectHtml += '<option value="' + g + '"' +
-      (g === (state.activeGlobalGrind || "fullFlat") ? " selected" : "") + ">" + label + "</option>";
-  });
-  grindSelectHtml += "</select></div>";
-
-  var body = document.createElement("div");
-  body.className = "card-body";
-  body.innerHTML =
-    '<div class="card-title"><div class="name">' + safeText(s.name) + '</div>' +
-      '<div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
-    '<div class="process">Process: ' + safeText(s.process) + "</div>" +
-    '<ul class="traits">' + traitsHtml + "</ul>" +
-    '<div class="mfg">🏭 ' + safeText(s.mfg) + "</div>" +
-    '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
-      '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>" +
-      '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' +
-        safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
-      '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
-    '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
-    '<div class="dps">' + dpsHtml + "</div>" +
-    grindSelectHtml +
-    '<div style="margin-top:8px;display:flex;gap:8px;justify-content:space-between;align-items:center">' +
-      '<button class="btn compare-btn">Compare</button>' +
-      '<button class="btn guide-btn">Sharpening Guide</button>' +
-    "</div>";
-
-  details.addEventListener("toggle", function () {
-    var txt = details.open ? "collapse" : "expand";
-    var toggle = summary.querySelector(".summary-toggle");
-    if (toggle) toggle.innerHTML = '<span class="chev">▼</span> Tap to ' + txt;
-  });
-
-  details.appendChild(summary);
-  details.appendChild(body);
-  div.appendChild(details);
-
-  var checkbox = summary.querySelector(".compare-checkbox");
-  if (checkbox) {
-    checkbox.checked = isInCompare(s);
-    checkbox.addEventListener("click", function (ev) { ev.stopPropagation(); });
-    checkbox.addEventListener("change", function () {
-      var currently = isInCompare(s);
-      if (checkbox.checked && !currently) toggleCompare(s);
-      else if (!checkbox.checked && currently) toggleCompare(s);
-      else syncCompareCheckboxes();
+    var grindOptions = ["fullFlat","hollow","convex","saber","scandi","chisel","compound","tanto","microbevel"];
+    var grindSelectHtml = '<div class="grind-select"><label>Grind</label><select class="card-grind-select">';
+    grindOptions.forEach(function (g) {
+      var label = {
+        fullFlat: "Full flat", hollow: "Hollow", convex: "Convex", saber: "Saber",
+        scandi: "Scandi", chisel: "Chisel", compound: "Compound", tanto: "Tanto",
+        microbevel: "Microbevel-focused"
+      }[g] || g;
+      grindSelectHtml += '<option value="' + g + '"' +
+        (g === (state.activeGlobalGrind || "fullFlat") ? " selected" : "") + ">" + label + "</option>";
     });
-  }
+    grindSelectHtml += "</select></div>";
 
-  var cardSelect = body.querySelector(".card-grind-select");
-  if (cardSelect) {
-    cardSelect.addEventListener("change", function (e) {
-      var chosen = e.target.value;
-      var newRec = getRecommendation(s, chosen);
-      var recStyle = body.querySelector(".rec-style");
-      var recGrit = body.querySelector(".rec-grit");
-      var recMicro = body.querySelector(".rec-micro");
-      var recNotes = body.querySelector(".rec-notes");
-      if (recStyle) recStyle.textContent = safeText(newRec.dpsStyle);
-      if (recGrit) recGrit.textContent = safeText(newRec.gritRange);
-      if (recMicro) recMicro.textContent = safeText(newRec.microbevel && newRec.microbevel.angle) + " @ " + safeText(newRec.microbevel && newRec.microbevel.grit);
-      if (recNotes) recNotes.textContent = safeText(newRec.notes);
+    var body = document.createElement("div");
+    body.className = "card-body";
+    body.innerHTML =
+      '<div class="card-title"><div class="name">' + safeText(s.name) + '</div>' +
+        '<div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
+      '<div class="process">Process: ' + safeText(s.process) + "</div>" +
+      '<ul class="traits">' + traitsHtml + "</ul>" +
+      '<div class="mfg">🏭 " ' + safeText(s.mfg) + "</div>" +
+      '<div class="rec-block"><div><strong>Recommended finish:</strong> <span class="rec-style">' + safeText(rec.dpsStyle) + "</span></div>" +
+        '<div><strong>Grit range:</strong> <span class="rec-grit">' + safeText(rec.gritRange) + "</span></div>" +
+        '<div class="microbevel"><strong>Microbevel:</strong> <span class="rec-micro">' +
+          safeText(rec.microbevel && rec.microbevel.angle) + " @ " + safeText(rec.microbevel && rec.microbevel.grit) + "</span></div>" +
+        '<div class="rec-notes"><em>' + safeText(rec.notes) + "</em></div></div>" +
+      '<div class="grit-pill">' + safeText(s.grit) + "</div>" +
+      '<div class="dps">' + dpsHtml + "</div>" +
+      grindSelectHtml +
+      '<div style="margin-top:8px;display:flex;gap:8px;justify-content:space-between;align-items:center">' +
+        '<button class="btn compare-btn">Compare</button>' +
+        '<button class="btn guide-btn">Sharpening Guide</button>' +
+      "</div>";
+
+    details.addEventListener("toggle", function () {
+      var txt = details.open ? "collapse" : "expand";
+      var toggle = summary.querySelector(".summary-toggle");
+      if (toggle) toggle.innerHTML = '<span class="chev">▼</span> Tap to ' + txt;
     });
+
+    details.appendChild(summary);
+    details.appendChild(body);
+    div.appendChild(details);
+
+    var checkbox = summary.querySelector(".compare-checkbox");
+    if (checkbox) {
+      checkbox.checked = isInCompare(s);
+      checkbox.addEventListener("click", function (ev) { ev.stopPropagation(); });
+      checkbox.addEventListener("change", function () {
+        var currently = isInCompare(s);
+        if (checkbox.checked && !currently) toggleCompare(s);
+        else if (!checkbox.checked && currently) toggleCompare(s);
+        else syncCompareCheckboxes();
+      });
+    }
+
+    var cardSelect = body.querySelector(".card-grind-select");
+    if (cardSelect) {
+      cardSelect.addEventListener("change", function (e) {
+        var chosen = e.target.value;
+        var newRec = getRecommendation(s, chosen);
+        var recStyle = body.querySelector(".rec-style");
+        var recGrit = body.querySelector(".rec-grit");
+        var recMicro = body.querySelector(".rec-micro");
+        var recNotes = body.querySelector(".rec-notes");
+        if (recStyle) recStyle.textContent = safeText(newRec.dpsStyle);
+        if (recGrit) recGrit.textContent = safeText(newRec.gritRange);
+        if (recMicro) recMicro.textContent = safeText(newRec.microbevel && newRec.microbevel.angle) + " @ " + safeText(newRec.microbevel && newRec.microbevel.grit);
+        if (recNotes) recNotes.textContent = safeText(newRec.notes);
+      });
+    }
+
+    var compareBtn = body.querySelector(".compare-btn");
+    if (compareBtn) compareBtn.addEventListener("click", function () { toggleCompare(s); });
+
+    var guideBtn = body.querySelector(".guide-btn");
+    if (guideBtn) guideBtn.addEventListener("click", function () {
+      var chosenSel = body.querySelector(".card-grind-select");
+      var chosen = chosenSel ? chosenSel.value : (state.activeGlobalGrind || "fullFlat");
+      var recObj = getRecommendation(s, chosen);
+      var guide = buildRecipeText(s, chosen, recObj);
+      showSharpeningGuide(guide);
+    });
+
+    var copyBtn = body.querySelector(".copy-recipe-btn");
+    if (copyBtn) copyBtn.addEventListener("click", function () {
+      var chosenSel2 = body.querySelector(".card-grind-select");
+      var chosen2 = chosenSel2 ? chosenSel2.value : (state.activeGlobalGrind || "fullFlat");
+      var recObj2 = getRecommendation(s, chosen2);
+      var recipe = buildRecipeText(s, chosen2, recObj2);
+      copyToClipboard(recipe);
+    });
+
+    return div;
   }
-
-  var compareBtn = body.querySelector(".compare-btn");
-  if (compareBtn) compareBtn.addEventListener("click", function () { toggleCompare(s); });
-
-  var guideBtn = body.querySelector(".guide-btn");
-  if (guideBtn) guideBtn.addEventListener("click", function () {
-    var chosenSel = body.querySelector(".card-grind-select");
-    var chosen = chosenSel ? chosenSel.value : (state.activeGlobalGrind || "fullFlat");
-    var recObj = getRecommendation(s, chosen);
-    var guide = buildRecipeText(s, chosen, recObj);
-    showSharpeningGuide(guide);
-  });
-
-  var copyBtn = body.querySelector(".copy-recipe-btn");
-  if (copyBtn) copyBtn.addEventListener("click", function () {
-    var chosenSel2 = body.querySelector(".card-grind-select");
-    var chosen2 = chosenSel2 ? chosenSel2.value : (state.activeGlobalGrind || "fullFlat");
-    var recObj2 = getRecommendation(s, chosen2);
-    var recipe = buildRecipeText(s, chosen2, recObj2);
-    copyToClipboard(recipe);
-  });
-
-  return div;
-}
 
   // --- Compare tray ---
   function toggleCompare(steel) {
@@ -312,59 +310,58 @@ function cardNode(s) {
     syncCompareCheckboxes();
   }
 
- function renderCompareTray() {
-  var tray = el("compareTray");
-  var list = el("compareList");
-  if (!tray || !list) return;
+  function renderCompareTray() {
+    var tray = el("compareTray");
+    var list = el("compareList");
+    if (!tray || !list) return;
 
-  list.innerHTML = "";
-  if (state.compare.length === 0) {
-    tray.hidden = true;
-    tray.setAttribute("aria-hidden", "true");
-    return;
-  }
+    list.innerHTML = "";
+    if (state.compare.length === 0) {
+      tray.hidden = true;
+      tray.setAttribute("aria-hidden", "true");
+      return;
+    }
 
-  tray.hidden = false;
-  tray.setAttribute("aria-hidden", "false");
+    tray.hidden = false;
+    tray.setAttribute("aria-hidden", "false");
 
-  state.compare.forEach(function (s) {
-    var rec = getRecommendation(s, state.activeGlobalGrind || "fullFlat");
+    state.compare.forEach(function (s) {
+      var rec = getRecommendation(s, state.activeGlobalGrind || "fullFlat");
 
-    var item = document.createElement("div");
-    item.className = "compare-item";
+      var item = document.createElement("div");
+      item.className = "compare-item";
 
-    item.innerHTML =
-      '<div class="compare-header"><strong>' + safeText(s.name) + '</strong>' +
-        '<div class="muted">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
-      '<div class="compare-rec"><strong>Finish:</strong> ' + safeText(rec.dpsStyle) + "</div>" +
-      '<div class="compare-rec"><strong>Grit:</strong> ' + safeText(rec.gritRange) + "</div>" +
-      '<div class="compare-rec"><strong>Microbevel:</strong> ' +
-        safeText(rec.microbevel && rec.microbevel.angle) + " @ " +
-        safeText(rec.microbevel && rec.microbevel.grit) + "</div>" +
-      '<div class="compare-rec"><strong>Notes:</strong> ' + safeText(rec.notes) + "</div>" +
-      '<div class="compare-rec"><strong>Traits:</strong> ' +
-        (Array.isArray(s.traits) ? s.traits.join(", ") : "") + "</div>" +
-      '<div class="compare-rec"><strong>🏭</strong> ' + safeText(s.mfg) + "</div>" +
-      '<div class="compare-actions">' +
-        '<button class="btn guide-btn">Sharpening Guide</button>' +
-        '<button class="btn remove-compare">Remove</button>' +
-      "</div>";
+      item.innerHTML =
+        '<div class="compare-header"><strong>' + safeText(s.name) + '</strong>' +
+          '<div class="muted">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
+        '<div class="compare-rec"><strong>Finish:</strong> ' + safeText(rec.dpsStyle) + "</div>" +
+        '<div class="compare-rec"><strong>Grit:</strong> ' + safeText(rec.gritRange) + "</div>" +
+        '<div class="compare-rec"><strong>Microbevel:</strong> ' +
+          safeText(rec.microbevel && rec.microbevel.angle) + " @ " +
+          safeText(rec.microbevel && rec.microbevel.grit) + "</div>" +
+        '<div class="compare-rec"><strong>Notes:</strong> ' + safeText(rec.notes) + "</div>" +
+        '<div class="compare-rec"><strong>Traits:</strong> ' +
+          (Array.isArray(s.traits) ? s.traits.join(", ") : "") + "</div>" +
+        '<div class="compare-rec"><strong>🏭</strong> ' + safeText(s.mfg) + "</div>" +
+        '<div class="compare-actions">' +
+          '<button class="btn guide-btn">Sharpening Guide</button>' +
+          '<button class="btn remove-compare">Remove</button>' +
+        "</div>";
 
-    // Wire up buttons
-    var guideBtn = item.querySelector(".guide-btn");
-    if (guideBtn) guideBtn.addEventListener("click", function () {
-      var guide = buildRecipeText(s, state.activeGlobalGrind || "fullFlat", rec);
-      showSharpeningGuide(guide);
+      var guideBtn = item.querySelector(".guide-btn");
+      if (guideBtn) guideBtn.addEventListener("click", function () {
+        var guide = buildRecipeText(s, state.activeGlobalGrind || "fullFlat", rec);
+        showSharpeningGuide(guide);
+      });
+
+      var removeBtn = item.querySelector(".remove-compare");
+      if (removeBtn) removeBtn.addEventListener("click", function () { toggleCompare(s); });
+
+      list.appendChild(item);
     });
 
-    var removeBtn = item.querySelector(".remove-compare");
-    if (removeBtn) removeBtn.addEventListener("click", function () { toggleCompare(s); });
-
-    list.appendChild(item);
-  });
-
-  syncCompareCheckboxes();
-}
+    syncCompareCheckboxes();
+  }
 
   function clearCompare() { state.compare = []; renderCompareTray(); syncCompareCheckboxes(); }
 
@@ -634,172 +631,144 @@ function cardNode(s) {
     }
   }
 
-// --- Init & wiring ---
-async function init() {
-  // -------------------------------
-  // 1. Inject version into DOM
-  // -------------------------------
-  // Set the version attribute on <body>
-  document.body.setAttribute("data-app-version", APP_VERSION);
-  document.title = "Knife Steel Reference v" + APP_VERSION;
+  // --- Init & wiring ---
+  async function init() {
+    // 1. Inject version into DOM
+    document.body.setAttribute("data-app-version", APP_VERSION);
+    document.title = "Knife Steel Reference v" + APP_VERSION;
 
-  // Update header <span class="version"> and footer <strong class="visible-version">
-  var vSpan = document.querySelector(".version");
-  if (vSpan) vSpan.textContent = APP_VERSION;
-  var vStrong = document.querySelector(".visible-version");
-  if (vStrong) vStrong.textContent = APP_VERSION;
+    var vSpan = document.querySelector(".version");
+    if (vSpan) vSpan.textContent = APP_VERSION;
+    var vStrong = document.querySelector(".visible-version");
+    if (vStrong) vStrong.textContent = APP_VERSION;
 
-  // Bust cache for manifest and CSS by appending ?v=APP_VERSION
-  var manifestLink = document.querySelector('link[rel="manifest"]');
-  if (manifestLink) manifestLink.href = "manifest.webmanifest?v=" + APP_VERSION;
-  var cssLink = document.querySelector('link[rel="stylesheet"]');
-  if (cssLink) cssLink.href = "app.css?v=" + APP_VERSION;
+    // Bust cache for manifest and CSS by appending ?v=APP_VERSION
+    var manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) manifestLink.href = "manifest.webmanifest?v=" + APP_VERSION;
+    var cssLink = document.querySelector('link[rel="stylesheet"]');
+    if (cssLink) cssLink.href = "app.css?v=" + APP_VERSION;
 
-  // --- Register service worker with version ---
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js?v=" + APP_VERSION);
-  }
-  // -------------------------------
-  // 2. Grab DOM elements
-  // -------------------------------
-  var input = el("steelSearch");
-  var clearBtn = el("clearSearch");
-  var expandBtn = el("expandAll");
-  var collapseBtn = el("collapseAll");
-  var grindFilter = el("grindSelect");
-  var clearCompareBtn = el("clearCompare");
-  var copyRecipeBtn = el("copyRecipe");
-  var refreshBtn = el("refreshBtn");
-  var closeGuideBtn = el("closeGuideBtn");
-  var copyGuideBtn = el("copyGuideBtn");
+    // Register service worker with version
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js?v=" + APP_VERSION);
+    }
 
-  // -------------------------------
-  // 3. Modal buttons
-  // -------------------------------
-  if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
-  if (copyGuideBtn) copyGuideBtn.addEventListener("click", copyGuideToClipboard);
+    // 2. Grab DOM elements
+    var input = el("steelSearch");
+    var clearBtn = el("clearSearch");
+    var expandBtn = el("expandAll");
+    var collapseBtn = el("collapseAll");
+    var grindFilter = el("grindSelect");
+    var clearCompareBtn = el("clearCompare");
+    var copyRecipeBtn = el("copyRecipe");
+    var refreshBtn = el("refreshBtn");
+    var closeGuideBtn = el("closeGuideBtn");
+    var copyGuideBtn = el("copyGuideBtn");
 
-  // -------------------------------
-  // 4. Initial UI state
-  // -------------------------------
-  if (clearBtn) clearBtn.style.display = "none";
+    // 3. Modal buttons
+    if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
+    if (copyGuideBtn) copyGuideBtn.addEventListener("click", copyGuideToClipboard);
 
-  // -------------------------------
-  // 5. Load steels.json
-  // -------------------------------
-  try {
-    state.steels = await loadSteels();
-  } catch (e) {
-    showErrorBanner("Load error: " + e.message);
-    state.steels = [];
-  }
+    // 4. Initial UI state
+    if (clearBtn) clearBtn.style.display = "none";
 
-  try {
-    buildIndex(state.steels);
-    renderGrouped(state.steels);
-  } catch (e) {
-    showErrorBanner("Render error: " + e.message);
-  }
+    // 5. Load steels.json
+    try {
+      state.steels = await loadSteels();
+    } catch (e) {
+      showErrorBanner("Load error: " + e.message);
+      state.steels = [];
+    }
 
-  // -------------------------------
-  // 6. Wire refresh button
-  // -------------------------------
-  if (refreshBtn) refreshBtn.addEventListener("click", forceReloadAll);
+    try {
+      buildIndex(state.steels);
+      renderGrouped(state.steels);
+    } catch (e) {
+      showErrorBanner("Render error: " + e.message);
+    }
 
-  // -------------------------------
-  // 7. Search wiring
-  // -------------------------------
-  function updateClearVisibility() {
-    if (!input || !clearBtn) return;
-    clearBtn.style.display = input.value.trim().length ? "inline-block" : "none";
-  }
+    // 6. Wire refresh button
+    if (refreshBtn) refreshBtn.addEventListener("click", forceReloadAll);
 
-  if (input) {
-    input.addEventListener("input", function (e) {
-      updateClearVisibility();
-      var q = e.target.value;
-      if (!q) {
+    // 7. Search wiring
+    function updateClearVisibility() {
+      if (!input || !clearBtn) return;
+      clearBtn.style.display = input.value.trim().length ? "inline-block" : "none";
+    }
+
+    if (input) {
+      input.addEventListener("input", function (e) {
+        updateClearVisibility();
+        var q = e.target.value;
+        if (!q) {
+          renderSuggestions([]);
+          renderGrouped(state.steels);
+          return;
+        }
+        renderSuggestions(fuzzyFind(q));
+      });
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          var q = e.target.value;
+          var results = fuzzyFind(q, 50);
+          renderSuggestions([]);
+          if (results.length) renderCards(results, true);
+          else renderGrouped(state.steels);
+          scrollToCards();
+        }
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () {
+        if (input) input.value = "";
+        updateClearVisibility();
         renderSuggestions([]);
         renderGrouped(state.steels);
-        return;
-      }
-      renderSuggestions(fuzzyFind(q));
-    });
-
-    input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        var q = e.target.value;
-        var results = fuzzyFind(q, 50);
-        renderSuggestions([]);
-        if (results.length) renderCards(results, true);
-        else renderGrouped(state.steels);
         scrollToCards();
+      });
+    }
+
+    // 8. Expand/collapse wiring
+    if (expandBtn) expandBtn.addEventListener("click", expandAllCards);
+    if (collapseBtn) collapseBtn.addEventListener("click", collapseAllCards);
+
+    // 9. Global grind filter
+    if (grindFilter) {
+      state.activeGlobalGrind = grindFilter.value && grindFilter.value !== "all" ? grindFilter.value : "";
+      grindFilter.addEventListener("change", function (e) {
+        var v = e.target.value || "";
+        state.activeGlobalGrind = (v === "all") ? "" : v;
+        renderGrouped(state.steels);
+      });
+    }
+
+    // 10. Compare tray actions
+    if (clearCompareBtn) clearCompareBtn.addEventListener("click", clearCompare);
+    if (copyRecipeBtn) copyRecipeBtn.addEventListener("click", copyCompareRecipes);
+
+    // 11. Suggestions dropdown close
+    document.addEventListener("click", function (e) {
+      var s = el("suggestions");
+      var wrap = document.querySelector(".search-wrap");
+      if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
+    });
+
+    // 12. Responsive re-render
+    var prevIsDesktop = window.innerWidth >= 769;
+    window.addEventListener("resize", function () {
+      var nowIsDesktop = window.innerWidth >= 769;
+      if (nowIsDesktop !== prevIsDesktop) {
+        prevIsDesktop = nowIsDesktop;
+        var q = (input && input.value) ? input.value.trim() : "";
+        if (q) renderCards(fuzzyFind(q), true);
+        else renderGrouped(state.steels);
       }
     });
   }
 
-  if (clearBtn) {
-    clearBtn.addEventListener("click", function () {
-      if (input) input.value = "";
-      updateClearVisibility();
-      renderSuggestions([]);
-      renderGrouped(state.steels);
-      scrollToCards();
-    });
-  }
-
-  // -------------------------------
-  // 8. Expand/collapse wiring
-  // -------------------------------
-  if (expandBtn) expandBtn.addEventListener("click", expandAllCards);
-  if (collapseBtn) collapseBtn.addEventListener("click", collapseAllCards);
-
-  // -------------------------------
-  // 9. Global grind filter
-  // -------------------------------
-  if (grindFilter) {
-    state.activeGlobalGrind = grindFilter.value && grindFilter.value !== "all" ? grindFilter.value : "";
-    grindFilter.addEventListener("change", function (e) {
-      var v = e.target.value || "";
-      state.activeGlobalGrind = (v === "all") ? "" : v;
-      renderGrouped(state.steels);
-    });
-  }
-
-  // -------------------------------
-  // 10. Compare tray actions
-  // -------------------------------
-  if (clearCompareBtn) clearCompareBtn.addEventListener("click", clearCompare);
-  if (copyRecipeBtn) copyRecipeBtn.addEventListener("click", copyCompareRecipes);
-
-  // -------------------------------
-  // 11. Suggestions dropdown close
-  // -------------------------------
-  document.addEventListener("click", function (e) {
-    var s = el("suggestions");
-    var wrap = document.querySelector(".search-wrap");
-    if (s && wrap && !wrap.contains(e.target)) s.classList.remove("show");
-  });
-
-  // -------------------------------
-  // 12. Responsive re-render
-  // -------------------------------
-  var prevIsDesktop = window.innerWidth >= 769;
-  window.addEventListener("resize", function () {
-    var nowIsDesktop = window.innerWidth >= 769;
-    if (nowIsDesktop !== prevIsDesktop) {
-      prevIsDesktop = nowIsDesktop;
-      var q = (input && input.value) ? input.value.trim() : "";
-      if (q) renderCards(fuzzyFind(q), true);
-      else renderGrouped(state.steels);
-    }
-  });
-}
-
- // -------------------------------
-  // 13. Init trigger
-  // -------------------------------
-  // Start the app once DOM is ready
+  // 13. Init trigger — single registration
   window.addEventListener("DOMContentLoaded", init);
 
 })(); // close the IIFE
