@@ -219,6 +219,14 @@
     });
     grindSelectHtml += "</select></div>";
 
+    var guideBtn = body.querySelector(".guide-btn");
+    if (guideBtn) guideBtn.addEventListener("click", function () {
+    var chosen = body.querySelector(".card-grind-select").value;
+    var recObj = getRecommendation(s, chosen);
+    var guide = buildRecipeText(s, chosen, recObj);
+    showSharpeningGuide(guide);
+    });
+    
     var body = document.createElement("div");
     body.className = "card-body";
     body.innerHTML = '<div class="card-title"><div class="name">' + safeText(s.name) + '</div><div class="hrc">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
@@ -234,7 +242,7 @@
       grindSelectHtml +
       '<div style="margin-top:8px;display:flex;gap:8px;justify-content:space-between;align-items:center">' +
       '<button class="btn compare-btn">Compare</button>' +
-      '<button class="btn copy-recipe-btn">Copy Recipe</button>' +
+      '<button class="btn guide-btn">Sharpening Guide</button>' +
       "</div>";
 
     details.addEventListener("toggle", function () {
@@ -375,6 +383,39 @@
     } catch (e) { alert("Copy not supported."); }
   }
 
+  function showSharpeningGuide(text) {
+  var overlay = el("guideModal");
+  var content = el("guideContent");
+  if (!overlay || !content) return;
+  content.textContent = text;
+  overlay.style.display = "flex";
+  overlay.setAttribute("aria-hidden", "false");
+}
+
+function hideSharpeningGuide() {
+  var overlay = el("guideModal");
+  if (!overlay) return;
+  overlay.style.display = "none";
+  overlay.setAttribute("aria-hidden", "true");
+}
+
+function copyGuideToClipboard() {
+  var content = el("guideContent");
+  if (!content) return;
+  var text = content.textContent;
+  try {
+    navigator.clipboard.writeText(text).catch(() => {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    });
+  } catch (e) {}
+}
+
+  
   // --- Grouped panels rendering ---
   function renderGrouped(steels) {
     var root = el("cards");
@@ -565,6 +606,10 @@
     var clearCompareBtn = el("clearCompare");
     var copyRecipeBtn = el("copyRecipe");
     var refreshBtn = el("refreshBtn");
+    var closeGuideBtn = el("closeGuideBtn");
+    var copyGuideBtn = el("copyGuideBtn");
+    if (closeGuideBtn) closeGuideBtn.addEventListener("click", hideSharpeningGuide);
+    if (copyGuideBtn) copyGuideBtn.addEventListener("click", copyGuideToClipboard);
 
     if (clearBtn) clearBtn.style.display = "none";
 
