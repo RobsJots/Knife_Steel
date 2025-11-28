@@ -641,6 +641,7 @@ async function init() {
   // -------------------------------
   // Set the version attribute on <body>
   document.body.setAttribute("data-app-version", APP_VERSION);
+  document.title = "Knife Steel Reference v" + APP_VERSION;
 
   // Update header <span class="version"> and footer <strong class="visible-version">
   var vSpan = document.querySelector(".version");
