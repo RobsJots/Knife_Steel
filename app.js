@@ -311,56 +311,59 @@
   }
 
   function renderCompareTray() {
-    var tray = el("compareTray");
-    var list = el("compareList");
-    if (!tray || !list) return;
+  var tray = el("compareTray");
+  var list = el("compareList");
+  if (!tray || !list) return;
 
-    list.innerHTML = "";
-    if (state.compare.length === 0) {
-      tray.hidden = true;
-      tray.setAttribute("aria-hidden", "true");
-      return;
-    }
+  list.innerHTML = "";
+  if (state.compare.length === 0) {
+    tray.hidden = true;
+    tray.setAttribute("aria-hidden", "true");
+    return;
+  }
 
-    tray.hidden = false;
-    tray.setAttribute("aria-hidden", "false");
+  tray.hidden = false;
+  tray.setAttribute("aria-hidden", "false");
 
-    state.compare.forEach(function (s) {
-      var rec = getRecommendation(s, state.activeGlobalGrind || "fullFlat");
+  state.compare.forEach(function (s) {
+    var rec = getRecommendation(s, state.activeGlobalGrind || "fullFlat");
 
-      var item = document.createElement("div");
-      item.className = "compare-item";
+    var item = document.createElement("div");
+    item.className = "compare-item";
 
-      item.innerHTML =
-        '<div class="compare-header"><strong>' + safeText(s.name) + '</strong>' +
-          '<div class="muted">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
-        '<div class="compare-rec"><strong>Finish:</strong> ' + safeText(rec.dpsStyle) + "</div>" +
-        '<div class="compare-rec"><strong>Grit:</strong> ' + safeText(rec.gritRange) + "</div>" +
-        '<div class="compare-rec"><strong>Microbevel:</strong> ' +
-          safeText(rec.microbevel?.angle) + " @ " + safeText(rec.microbevel?.grit) + "</div>" +
-       '<div class="compare-rec"><strong>Notes:</strong> ' + safeText(rec.notes) + "</div>" +
-       '<div class="compare-rec"><strong>Traits:</strong> ' +
-         (Array.isArray(s.traits) ? s.traits.join(", ") : "") + "</div>" +
-       '<div class="compare-rec"><strong>🏭</strong> ' + safeText(s.mfg) + "</div>" +
-       '<div class="compare-actions">' +
-         '<button class="btn guide-btn">Sharpening Guide</button>' +
-         '<button class="btn remove-compare">Remove</button>' +
-  "</div>";
+    item.innerHTML =
+      '<div class="compare-header"><strong>' + safeText(s.name) + '</strong>' +
+        '<div class="muted">' + safeText(s.hrcRange) + " / " + safeText(s.hrcOptimal) + "</div></div>" +
 
-      var guideBtn = item.querySelector(".guide-btn");
-      if (guideBtn) guideBtn.addEventListener("click", function () {
-        var guide = buildRecipeText(s, state.activeGlobalGrind || "fullFlat", rec);
-        showSharpeningGuide(guide);
-      });
+      '<div class="compare-rec"><strong>Finish:</strong> ' + safeText(rec.dpsStyle) + "</div>" +
+      '<div class="compare-rec"><strong>Grit:</strong> ' + safeText(rec.gritRange) + "</div>" +
+      '<div class="compare-rec"><strong>Microbevel:</strong> ' +
+        safeText(rec.microbevel?.angle) + " @ " + safeText(rec.microbevel?.grit) + "</div>" +
+      '<div class="compare-rec"><strong>Notes:</strong> ' + safeText(rec.notes) + "</div>" +
+      '<div class="compare-rec"><strong>Traits:</strong> ' +
+        (Array.isArray(s.traits) ? s.traits.join(", ") : "") + "</div>" +
+      '<div class="compare-rec"><strong>🏭</strong> ' + safeText(s.mfg) + "</div>" +
 
-      var removeBtn = item.querySelector(".remove-compare");
-      if (removeBtn) removeBtn.addEventListener("click", function () { toggleCompare(s); });
+      '<div class="compare-actions">' +
+        '<button class="btn guide-btn">Sharpening Guide</button>' +
+        '<button class="btn remove-compare">Remove</button>' +
+      "</div>";
 
-      list.appendChild(item);
+    // Wire up buttons
+    var guideBtn = item.querySelector(".guide-btn");
+    if (guideBtn) guideBtn.addEventListener("click", function () {
+      var guide = buildRecipeText(s, state.activeGlobalGrind || "fullFlat", rec);
+      showSharpeningGuide(guide);
     });
 
-    syncCompareCheckboxes();
-  }
+    var removeBtn = item.querySelector(".remove-compare");
+    if (removeBtn) removeBtn.addEventListener("click", function () { toggleCompare(s); });
+
+    list.appendChild(item);
+  });
+
+  syncCompareCheckboxes();
+}
 
   function clearCompare() { state.compare = []; renderCompareTray(); syncCompareCheckboxes(); }
 
